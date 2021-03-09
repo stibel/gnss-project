@@ -6,6 +6,8 @@ import sem from 'gps-sem-parser';
 import GetTimeService from "../services/GetTimeService";
 import GetMeanMotionService from "../services/GetMeanMotionService";
 import CorrectMeanAnomalyService from "../services/CorrectMeanAnomalyService";
+import GetEccentricAnomalyService from "../services/GetEccentricAnomalyService";
+import GetRealAnomalyService from "../services/GetRealAnomalyService";
 
 const PageWrapper = styled.main`
   padding: 0;
@@ -43,6 +45,8 @@ const LoadFileScreen = (props) => {
         calculatedValues.tk = GetTimeService(alm.toa);
         calculatedValues.meanMotionArr = GetMeanMotionService(alm.satellites);
         calculatedValues.correctedAnomalies = CorrectMeanAnomalyService(alm.satellites, calculatedValues.meanMotionArr, calculatedValues.tk);
+        calculatedValues.eccentricAnomalies = GetEccentricAnomalyService(alm.satellites, calculatedValues.correctedAnomalies);
+        calculatedValues.realAnomalies = GetRealAnomalyService(calculatedValues.eccentricAnomalies);
         console.log(calculatedValues);
     }
 

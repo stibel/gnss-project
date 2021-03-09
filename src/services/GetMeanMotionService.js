@@ -7,7 +7,7 @@ const GetMeanMotionService = (satArray) => {
         aCubed = Math.pow(satArray[idx].semimajorAxis, 3);
         nArr.push(Math.sqrt(constantValue / aCubed));
     }
-    console.log(nArr);
+    //console.log(nArr);
     return nArr;
 }
 

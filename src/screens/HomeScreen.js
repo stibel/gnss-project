@@ -15,7 +15,8 @@ const PageWrapper = styled.div`
 
 const HomeScreen = (props) => {
 
-    const [apod, setApod] = useState();
+    const [apod, setApod] = useState(null);
+    const [fetched, setFetched] = useState(false);
 
     const toastError = () => toast.error('Failed to fetch data from NASA API');
 
@@ -23,7 +24,9 @@ const HomeScreen = (props) => {
 
         fetch('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY')
             .then(res => res.ok ? res.json() : toastError())
-            .then(data => setApod(data))
+            .then(data => setApod(data));
+
+        setFetched(true);
     }
 
     useEffect(() => {

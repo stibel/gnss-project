@@ -1,10 +1,11 @@
 const GetTimeService = (toa) => {
 
-    const dayZero = new Date("01/06/1980 00:00:00"), day = new Date(),
-        difference = day.getTime() - dayZero.getTime();
 
-    let week;
-    week = Math.floor(difference / 1000 / 60 / 60 / 24 / 7);
+    const dayZero = new Date("01/06/1980 00:00:00");
+    const day = new Date();
+    const difference = day.getTime() - dayZero.getTime();
+
+    let week = Math.floor(difference / 1000 / 60 / 60 / 24 / 7);
 
     let diff2ms;
     diff2ms = difference - week * 1000 * 60 * 60 * 24 * 7;
