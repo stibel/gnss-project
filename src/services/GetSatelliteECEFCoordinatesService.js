@@ -39,7 +39,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
     //step four vars
 
-    const stopCondition = new Decimal(10 * e - 15); //e or eccentricity or 10^-15?
+    const stopCondition = Decimal.pow(10,-15); //e or eccentricity or 10^-15?
 
     //step five vars
 
@@ -65,7 +65,17 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
     let xk, yk;
 
+    //step nine vars
+
+    let bigOmegak;
+
+    //step ten vars
+
+    let Xk, Yk, Zk;
+
     /************************************************************************************/
+
+    let ECEFCoordinates = [];
 
     let temp;
 
@@ -136,6 +146,27 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
         xk = rk.times(Decimal.cos(phik));
         yk = rk.times(Decimal.sin(phik));
 
+        console.log(xk, yk);
+
+        //step nine
+        const rateOfRightAscension = new Decimal(satArray[idx].rightAscensionDot);
+        const rightAscension = new Decimal(satArray[idx].rightAscension);
+
+        bigOmegak = rightAscension.plus(tk.times(rateOfRightAscension.minus(omega))).minus(omega.times(tk));
+
+        console.log(bigOmegak);
+
+        //step ten
+
+        const orbitalInclination = new Decimal(satArray[idx].inclination);
+
+        Xk = xk.times(Decimal.cos(bigOmegak)).minus(yk.times(Decimal.cos(orbitalInclination).times(Decimal.sin(bigOmegak))));
+        Yk = xk.times(Decimal.sin(bigOmegak)).plus(yk.times(Decimal.cos(orbitalInclination).times(Decimal.cos(bigOmegak))));
+        Zk = yk.times(Decimal.sin(orbitalInclination));
+
+        ECEFCoordinates.push([Xk, Yk, Zk]);
+
+        console.log(ECEFCoordinates);
     }
 
 
