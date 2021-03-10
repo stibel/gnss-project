@@ -3,7 +3,6 @@ import Decimal, {Decimal as Dec} from "decimal.js";
 const GetSatelliteECEFCoordinatesService = (almanach) => {
 
     const satArray = almanach.satellites;
-    const e = new Decimal(2.71828182845904523536028747135266249775724709369995);
 
     //step one
 
@@ -12,7 +11,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
             difference = day.getTime() - dayZero.getTime();
 
     let week;
-    week = Math.floor(difference / 1000 / 60 / 60 / 24 / 7);
+    week = Decimal.floor(difference / 1000 / 60 / 60 / 24 / 7);
 
     let diff2ms;
     diff2ms = difference - week * 1000 * 60 * 60 * 24 * 7;
@@ -21,7 +20,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
     const seconds = diff2ms / 1000;
     console.log(week, seconds);
 
-    const tk = week * 604800000 + seconds - almanach.toa;
+    const tk = new Decimal(week * 604800000 + seconds - almanach.toa);
     console.log(tk);
 
     //step two vars
@@ -81,7 +80,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
     for (const idx in satArray) {
 
-        const eccentricity = satArray[idx].eccentricity;
+        const eccentricity = new Decimal(satArray[idx].eccentricity);
 
         //step two
 
@@ -136,7 +135,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
         //step seven
 
-        const A = satArray[idx].semimajorAxis;
+        const A = new Decimal(satArray[idx].semimajorAxis);
         temp = eccentricity.times(Decimal.cos(Ei));
         temp = one.minus(temp);
         rk = A.times(temp);
@@ -169,7 +168,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
         console.log(ECEFCoordinates);
     }
 
-
+    return ECEFCoordinates;
 }
 
 export default GetSatelliteECEFCoordinatesService

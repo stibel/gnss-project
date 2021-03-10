@@ -3,11 +3,7 @@ import {Link} from "react-router-dom";
 import styled from "styled-components";
 import sem from 'gps-sem-parser';
 
-import GetTimeService from "../services/GetTimeService";
-import GetMeanMotionService from "../services/GetMeanMotionService";
-import CorrectMeanAnomalyService from "../services/CorrectMeanAnomalyService";
-import GetEccentricAnomalyService from "../services/GetEccentricAnomalyService";
-import GetRealAnomalyService from "../services/GetRealAnomalyService";
+import GetSatelliteECEFCoordinatesService from "../services/GetSatelliteECEFCoordinatesService";
 
 const PageWrapper = styled.main`
   padding: 0;
@@ -27,7 +23,7 @@ const LoadFileScreen = (props) => {
 
     const [alm, setAlm] = useState();
     const [fileLoaded, setFileLoaded] = useState(false);
-    let calculatedValues = {};
+    let EFECCoords = [];
 
     const read = () => {
         fetch('./data/data.sem')
@@ -42,12 +38,7 @@ const LoadFileScreen = (props) => {
         }, [alm])
 
     if (fileLoaded) {
-        calculatedValues.tk = GetTimeService(alm.toa);
-        calculatedValues.meanMotionArr = GetMeanMotionService(alm.satellites);
-        calculatedValues.correctedAnomalies = CorrectMeanAnomalyService(alm.satellites, calculatedValues.meanMotionArr, calculatedValues.tk);
-        calculatedValues.eccentricAnomalies = GetEccentricAnomalyService(alm.satellites, calculatedValues.correctedAnomalies);
-        calculatedValues.realAnomalies = GetRealAnomalyService(calculatedValues.eccentricAnomalies);
-        console.log(calculatedValues);
+        EFECCoords = GetSatelliteECEFCoordinatesService(alm);
     }
 
     return (
