@@ -19,7 +19,8 @@ const CalcTimeScreen = (props) => {
     return (
         <div onClick={toWeekNo}>
             Oblicz do liczby tygodni i sekund
-            <Link to={"/"}>Na zad</Link>
+            <br/>
+            <Link to={"/"}>wstecz</Link>
         </div>
     )
 }

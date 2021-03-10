@@ -7,21 +7,23 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
     //step one
 
     const dayZero = new Date("01/06/1980 00:00:00"),
-            day = new Date(),
-            difference = day.getTime() - dayZero.getTime();
+            day = new Date("03/01/2021 00:00:00"),
+            difference = day.getTime() - dayZero.getTime(); //difference between dates in miliseconds
 
     let week;
     week = Decimal.floor(difference / 1000 / 60 / 60 / 24 / 7);
+    // get amount of weeks between dayZero nad day
+    // difference[ms] / ms in s / s in m / m in h / h in d / d in w
 
     let diff2ms;
     diff2ms = difference - week * 1000 * 60 * 60 * 24 * 7;
 
-    week -= 2048;
+    week -= 2048; //two full epochs (1024 weeks) passed since dayZero
     const seconds = diff2ms / 1000;
-    console.log(week, seconds);
+    // console.log(week, seconds);
 
     const tk = new Decimal(week * 604800000 + seconds - almanach.toa);
-    console.log(tk);
+    // console.log(tk);
 
     //step two vars
 
@@ -88,7 +90,9 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
         temp = Decimal.div(my, aCubed);
         meanMotion = Decimal.sqrt(temp);
 
-        console.log(meanMotion);
+        //TODO: debug beyond this point, probably wrong decimal.js usage
+
+        // console.log(meanMotion);
 
         //step three
 
@@ -98,7 +102,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
         Mk = Decimal.add(Mk, temp);
 
-        console.log(Mk);
+        // console.log(Mk);
 
         //step four
 
@@ -111,7 +115,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
             Ei = new Decimal((Mk.plus(eccentricity * (Dec.sin(E)))));
         }
 
-        console.log(Ei);
+        // console.log(Ei);
 
         //step five
 
@@ -125,13 +129,13 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
         vk = Decimal.atan2(dividend, divider);
 
-        console.log(vk);
+        // console.log(vk);
 
         //step six
 
         phik = vk.plus(omega);
 
-        console.log(phik);
+        // console.log(phik);
 
         //step seven
 
@@ -145,7 +149,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
         xk = rk.times(Decimal.cos(phik));
         yk = rk.times(Decimal.sin(phik));
 
-        console.log(xk, yk);
+        // console.log(xk, yk);
 
         //step nine
         const rateOfRightAscension = new Decimal(satArray[idx].rightAscensionDot);
@@ -153,7 +157,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
         bigOmegak = rightAscension.plus(tk.times(rateOfRightAscension.minus(omega))).minus(omega.times(tk));
 
-        console.log(bigOmegak);
+        // console.log(bigOmegak);
 
         //step ten
 
@@ -165,7 +169,13 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
         ECEFCoordinates.push([Xk, Yk, Zk]);
 
-        console.log(ECEFCoordinates);
+        // console.log(ECEFCoordinates);
+
+        if (satArray[idx].prn === 1) {
+            console.log("tk: " + tk + " n: " + meanMotion + " Mk:" + Mk + " Ei:" + Ei + " vk:" + vk + " phik:" + phik +
+                " rk:" + rk + "small coords: " + xk + ' ' + yk + " bigOmega: " + bigOmegak + " ecef coords: " + Xk + ' '
+                + Yk + ' ' + Zk)
+        }
     }
 
     return ECEFCoordinates;

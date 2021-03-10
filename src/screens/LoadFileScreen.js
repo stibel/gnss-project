@@ -4,6 +4,7 @@ import styled from "styled-components";
 import sem from 'gps-sem-parser';
 
 import GetSatelliteECEFCoordinatesService from "../services/GetSatelliteECEFCoordinatesService";
+import GetTopocentricCoordinatesService from "../services/GetTopocentricCoordinatesService";
 
 const PageWrapper = styled.main`
   padding: 0;
@@ -50,7 +51,7 @@ const LoadFileScreen = (props) => {
                 Odczytaj plik
             </ButtonWrapper>
             <Link to={"/"}>
-                Na zad
+                wstecz
             </Link>
             {/*<ButtonWrapper onClick={calc}>*/}
             {/*    policz ruch średni*/}
@@ -58,6 +59,9 @@ const LoadFileScreen = (props) => {
             {/*<ButtonWrapper onClick={toWeekNo}>*/}
             {/*    policz czas (tk)*/}
             {/*</ButtonWrapper>*/}
+            <ButtonWrapper onClick={GetTopocentricCoordinatesService}>
+                test
+            </ButtonWrapper>
         </PageWrapper>
     )
 }
