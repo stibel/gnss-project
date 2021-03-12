@@ -4,26 +4,37 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
     const satArray = almanach.satellites;
 
+    const toa = almanach.toa;
+    console.log("toa: " + toa);
     //step one
+    //TODO: fix tk, it's the root of all problems
 
-    const dayZero = new Date("01/06/1980 00:00:00"),
-            day = new Date("03/01/2021 00:00:00"),
+    const dayZero = new Date("January 6, 1980 00:00:00"),
+            day = new Date("March 1 2021, 00:00:00"),
             difference = day.getTime() - dayZero.getTime(); //difference between dates in miliseconds
 
+    const msInWeek = 604800000;
+
     let week;
-    week = Decimal.floor(difference / 1000 / 60 / 60 / 24 / 7);
+    week = Math.floor(difference / msInWeek); //full weeks between dayZero and day
+    // console.log(week);
     // get amount of weeks between dayZero nad day
-    // difference[ms] / ms in s / s in m / m in h / h in d / d in w
+    // console.log(week.times(msInWeek));
 
     let diff2ms;
-    diff2ms = difference - week * 1000 * 60 * 60 * 24 * 7;
+    diff2ms = difference - (week * msInWeek); //miliseconds left after substracting full weeks
+    console.log(diff2ms);
 
-    week -= 2048; //two full epochs (1024 weeks) passed since dayZero
-    const seconds = diff2ms / 1000;
+    week = week - 2048; //two full epochs (two times 1024 weeks) passed since dayZero, hardcoded for now
+
+    const seconds = diff2ms / 1000; //miliseconds left after substracting full weeks
+    console.log(seconds);
     // console.log(week, seconds);
 
-    const tk = new Decimal(week * 604800000 + seconds - almanach.toa);
-    // console.log(tk);
+    const week2sec = week * 604800;
+    const TK = week2sec + seconds - toa;
+    console.log(TK);
+    const tk = new Decimal(TK);
 
     //step two vars
 
@@ -86,21 +97,19 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
         //step two
 
-        aCubed = Decimal.pow(satArray[idx].semimajorAxis, 3);
-        temp = Decimal.div(my, aCubed);
-        meanMotion = Decimal.sqrt(temp);
-
-        //TODO: debug beyond this point, probably wrong decimal.js usage
+        a = new Decimal(satArray[idx].semimajorAxis);
+        // temp = Decimal.div(my, aCubed);
+        meanMotion = Decimal.sqrt(Decimal.div(my, Decimal.pow(a, 3)));
 
         // console.log(meanMotion);
 
         //step three
 
-        temp = Decimal.mul(meanMotion, tk);
+        //temp = Decimal.mul(meanMotion, tk);
 
-        Mk = satArray[idx].meanAnomaly;
+        Mk = new Decimal(satArray[idx].meanAnomaly);
 
-        Mk = Decimal.add(Mk, temp);
+        Mk = Decimal.add(Mk, Decimal.mul(meanMotion, tk));
 
         // console.log(Mk);
 
