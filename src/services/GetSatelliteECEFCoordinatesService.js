@@ -4,10 +4,8 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
     const satArray = almanach.satellites;
 
-    const toa = almanach.toa;
-    console.log("toa: " + toa);
+    const gpsWeek = almanach.gpsWeek - 2048; //substracting full epochs
     //step one
-    //TODO: fix tk, it's the root of all problems
 
     const dayZero = new Date("January 6, 1980 00:00:00"),
             day = new Date("March 1 2021, 00:00:00"),
@@ -25,16 +23,16 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
     diff2ms = difference - (week * msInWeek); //miliseconds left after substracting full weeks
     console.log(diff2ms);
 
-    week = week - 2048; //two full epochs (two times 1024 weeks) passed since dayZero, hardcoded for now
+    week -= 2048;//two full epochs (two times 1024 weeks) passed since dayZero, hardcoded for now
 
     const seconds = diff2ms / 1000; //miliseconds left after substracting full weeks
     console.log(seconds);
     // console.log(week, seconds);
 
-    const week2sec = week * 604800;
-    const TK = week2sec + seconds - toa;
-    console.log(TK);
-    const tk = new Decimal(TK);
+    const t = (week * 604800) + seconds;
+    const toa = almanach.toa + (gpsWeek * 604800);
+    const tk = new Decimal(t - toa);
+    console.log(tk);
 
     //step two vars
 
@@ -104,6 +102,8 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
         // console.log(meanMotion);
 
         //step three
+
+        //TODO: debug beyond this point
 
         //temp = Decimal.mul(meanMotion, tk);
 
