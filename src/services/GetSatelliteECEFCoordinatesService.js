@@ -1,10 +1,18 @@
 import Decimal, {Decimal as Dec} from "decimal.js";
 
+const degToRad = (degrees) => {
+
+    const degs = new Decimal(degrees);
+    const pi = Decimal.acos(-1);
+    return degs.times(pi.div(180));
+}
+
 const GetSatelliteECEFCoordinatesService = (almanach) => {
 
     const satArray = almanach.satellites;
 
     const gpsWeek = almanach.gpsWeek - 2048; //substracting full epochs
+
     //step one
 
     const dayZero = new Date("January 6, 1980 00:00:00"),
@@ -32,7 +40,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
     const t = (week * 604800) + seconds;
     const toa = almanach.toa + (gpsWeek * 604800);
     const tk = new Decimal(t - toa);
-    console.log(tk);
+    // console.log(tk);
 
     //step two vars
 
@@ -45,6 +53,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
     //step three vars
 
+    let meanAnomaly
     let Mk;
 
     //step four vars
@@ -103,19 +112,15 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
         //step three
 
-        //TODO: debug beyond this point
-
         //temp = Decimal.mul(meanMotion, tk);
 
-        Mk = new Decimal(satArray[idx].meanAnomaly);
-
-        Mk = Decimal.add(Mk, Decimal.mul(meanMotion, tk));
-
-        // console.log(Mk);
+        meanAnomaly = new Decimal(satArray[idx].meanAnomaly);
+        Mk = meanAnomaly.plus(Decimal.mul(meanMotion, tk));
+        Mk = Decimal.mod(Mk, 2 * Decimal.acos(-1));
 
         //step four
 
-        let E = Mk;
+        let E = new Decimal(Mk);
         let Ei = new Decimal(E.plus(eccentricity * (Decimal.sin(E))));
 
         while (Decimal.abs(Ei.minus(E)) > stopCondition) {
@@ -127,6 +132,8 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
         // console.log(Ei);
 
         //step five
+
+        //TODO: debug beyond this point
 
         eccSquared = Decimal.pow(eccentricity, 2);
         diff = one.minus(eccSquared);
@@ -190,4 +197,5 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
     return ECEFCoordinates;
 }
 
-export default GetSatelliteECEFCoordinatesService
+export default GetSatelliteECEFCoordinatesService;
+export {degToRad};

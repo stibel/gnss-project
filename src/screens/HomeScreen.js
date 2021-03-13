@@ -24,9 +24,7 @@ const HomeScreen = (props) => {
 
         fetch('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY')
             .then(res => res.ok ? res.json() : toastError())
-            .then(data => setApod(data));
-
-        setFetched(true);
+            .then(data => setApod(data)).then(fetched => setFetched(true));
     }
 
     useEffect(() => {
@@ -42,7 +40,14 @@ const HomeScreen = (props) => {
                 home page
                 <Link to={"/Load"}>Załaduj plika</Link>
                 <Link to={"/Calc"}>Przelicz czas</Link>
-            <div onClick={toastError}>kliknij se</div>
+            {fetched ? (
+                <div>
+                    <p>{apod.date} : {apod.title}</p>
+                    <a href={apod.url} target={"_blank"}>Zobacz zdjęcie</a>
+                </div>
+            ) : (
+                <p>Ładowanie...</p>
+            )}
             <ToastContainer />
         </PageWrapper>
     )
