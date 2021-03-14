@@ -7,6 +7,7 @@ const GetTopocentricCoordinatesService = (receiver, satellites) => {
 
     let temp;
 
+    //hardcoded values for testing
     const phi = degToRad(52), lambda = degToRad(21), h = new Decimal(100);
 
     const a = new Decimal(6378137);
