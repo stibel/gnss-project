@@ -16,7 +16,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
     //step one
 
     const dayZero = new Date("January 6, 1980 00:00:00"),
-            day = new Date("March 1 2021, 00:00:00"),
+            day = new Date("March 1, 2021 00:00:00"),
             difference = day.getTime() - dayZero.getTime(); //difference between dates in miliseconds
 
     const msInWeek = 604800000;
@@ -73,6 +73,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
     multiplicand = new Decimal(7.2921151467);
     multiplier = Decimal.pow(10, -5);
     const omega = multiplicand.times(multiplier);
+    console.log("omega: " + omega);
 
     let phik = new Decimal(0);
 
@@ -149,7 +150,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
         //step six
 
-        phik = vk.plus(omega);
+        phik = vk.plus(satArray[idx].argumentOfPeriapsis);
 
         // console.log(phik);
 
@@ -171,7 +172,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
         const rateOfRightAscension = new Decimal(satArray[idx].rightAscensionDot);
         const rightAscension = new Decimal(satArray[idx].rightAscension);
 
-        bigOmegak = rightAscension.plus(tk.times(rateOfRightAscension.minus(omega))).minus(omega.times(tk));
+        bigOmegak = rightAscension.plus(tk.times(rateOfRightAscension.minus(omega))).minus(omega.times(almanach.toa));
 
         // console.log(bigOmegak);
 
