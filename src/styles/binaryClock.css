@@ -1,0 +1,22 @@
+.pip {
+    width: 2vh;
+    height: 2vh;
+    margin: 0.4vh;
+    background-color: #BA1E68;
+    border-radius: 100%;
+    transition: all .3s ease-in;
+}
+
+.pip--on {
+    background-color: #FCFBFE;
+    transform: scale(1.1);
+}
+
+.clock {
+    display: flex
+}
+
+.binary-digit-group {
+    display: flex;
+    margin: 0 6px;
+}

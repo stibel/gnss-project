@@ -1,18 +1,33 @@
 import React, {useState, useEffect} from 'react';
-import {Link} from 'react-router-dom';
-import styled from"styled-components";
+import styled, {ThemeProvider} from"styled-components";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import mainTheme from "../styles/main";
 import Loading from "../components/Loading";
 
 const PageWrapper = styled.div`
   padding: 0;
   margin: 0;
   display: flex;
-  flex-flow: column;
+  flex-flow: row;
+  justify-content: left;
   width: 100vw;
   height: 90vh;
+  background-image: linear-gradient(180deg, ${props => props.theme.colours.primary}, ${props => props.theme.colours.details});
+  font-family: ${props => props.theme.fonts.family};
+  font-size: ${props => props.theme.fonts.size.l};
+  -webkit-text-fill-color: ${props => props.theme.colours.secondary};
+`
+
+const ContentWrapper = styled.main`
+  padding: 0;
+  margin: 0;
+  display: flex;
+  width: 50vw;
+  height: 50vh;
+  align-items: center;
+  justify-content: center;
 `
 
 const HomeScreen = (props) => {
@@ -39,20 +54,26 @@ const HomeScreen = (props) => {
     }, [apod])
 
     return (
-        <PageWrapper>
-                home page
-                <Link to={"/Load"}>Załaduj plika</Link>
-                <Link to={"/Calc"}>Przelicz czas</Link>
-            {fetched ?
-                <div>
-                    <p>{apod.date} : {apod.title}</p>
-                    <a href={apod.url} target={"_blank"} rel={"noopener"}>Zobacz zdjęcie</a>
-                </div>
-                :
-                <Loading type={"spin"} color={"#000000"} height={"20%"} />
-            }
-            <ToastContainer />
+        <div>
+        <ThemeProvider theme = {mainTheme}>
+            <PageWrapper>
+                <ContentWrapper>
+                    Mikołaj Siebielec
+                </ContentWrapper>
+                <ContentWrapper>
+                    {fetched ?
+                        <div>
+                            <p>{apod.date} <br/> {apod.title}</p>
+                            <img src={apod.url} />
+                        </div>
+                        :
+                        <Loading type={"spin"} color={mainTheme.colours.details} height={"20%"} />
+                    }
+                </ContentWrapper>
         </PageWrapper>
+        </ThemeProvider>
+        <ToastContainer />
+        </div>
     )
 }
 

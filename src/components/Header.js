@@ -1,8 +1,10 @@
 import React from "react";
 import {NavLink} from "react-router-dom";
-import styled from "styled-components";
+import styled, {ThemeProvider} from "styled-components";
 import SkyBG from "react-sky-bg";
-import MyClock from "./Clock";
+
+import mainTheme from "../styles/main";
+import Clock from "./Clock";
 
 const HeaderWrapper = styled.div`
   padding: 0;
@@ -26,6 +28,35 @@ const NavWrapper = styled.nav`
   position: absolute;
 `
 
+const ItemWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: 5%;
+  font-weight: bold;
+  font-family: ${props => props.theme.fonts.family};
+  font-size: ${props => props.theme.fonts.size.xl};
+
+  @keyframes shadow{
+    100% {
+      text-shadow: 2px 2px ${props => props.theme.colours.details};
+    }
+  }
+
+  &:hover {
+    animation: shadow 0.2s;
+    -webkit-animation-fill-mode: forwards;
+  }
+`
+
+const style = {
+    textDecoration: "none",
+    color: mainTheme.colours.primary
+}
+
+const activeStyle = {
+    textShadow: "2px 2px" + mainTheme.colours.details
+}
+
 const ClockWrapper = styled.div`
   width: 5vw;
   display: flex;
@@ -37,15 +68,33 @@ const ClockWrapper = styled.div`
 
 const Header = (props) => {
     return (
-        <HeaderWrapper>
-            <SkyBG />
-            <NavWrapper>
-
-            </NavWrapper>
-            <ClockWrapper>
-                <MyClock />
-            </ClockWrapper>
-        </HeaderWrapper>
+        <ThemeProvider theme={mainTheme}>
+            <HeaderWrapper>
+                <SkyBG />
+                <NavWrapper>
+                    <ItemWrapper>
+                        <NavLink
+                            exact to={"/"}
+                            style={style}
+                            activeStyle={activeStyle}>
+                            Strona Główna
+                        </NavLink>
+                    </ItemWrapper>
+                    <ItemWrapper>
+                        <NavLink
+                            to="/Load"
+                            style={style}
+                            activeStyle={activeStyle}
+                        >
+                            Wyznacz datę
+                        </NavLink>
+                    </ItemWrapper>
+                </NavWrapper>
+                <ClockWrapper>
+                    <Clock />
+                </ClockWrapper>
+            </HeaderWrapper>
+        </ThemeProvider>
     )
 }
 

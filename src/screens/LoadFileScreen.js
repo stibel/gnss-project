@@ -53,15 +53,9 @@ const LoadFileScreen = (props) => {
             <Link to={"/"}>
                 wstecz
             </Link>
-            {/*<ButtonWrapper onClick={calc}>*/}
-            {/*    policz ruch średni*/}
+            {/*<ButtonWrapper onClick={GetTopocentricCoordinatesService}>*/}
+            {/*    test*/}
             {/*</ButtonWrapper>*/}
-            {/*<ButtonWrapper onClick={toWeekNo}>*/}
-            {/*    policz czas (tk)*/}
-            {/*</ButtonWrapper>*/}
-            <ButtonWrapper onClick={GetTopocentricCoordinatesService}>
-                test
-            </ButtonWrapper>
         </PageWrapper>
     )
 }
