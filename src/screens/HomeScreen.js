@@ -4,6 +4,8 @@ import styled from"styled-components";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import Loading from "../components/Loading";
+
 const PageWrapper = styled.div`
   padding: 0;
   margin: 0;
@@ -47,7 +49,7 @@ const HomeScreen = (props) => {
                     <a href={apod.url} target={"_blank"} rel={"noopener"}>Zobacz zdjęcie</a>
                 </div>
                 :
-                <p>Ładowanie...</p>
+                <Loading type={"spin"} color={"#000000"} height={"20%"} />
             }
             <ToastContainer />
         </PageWrapper>

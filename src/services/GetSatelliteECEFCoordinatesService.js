@@ -48,7 +48,6 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
     let multiplier = Decimal.pow(10, 14);
     const my = multiplicand.times(multiplier);
 
-    let aCubed;
     let meanMotion;
 
     //step three vars
@@ -95,17 +94,21 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
     /************************************************************************************/
 
-    let ECEFCoordinates = [];
+    let satellitesArray = []; //array of satellites
 
     let temp;
 
     for (const idx in satArray) {
 
-        const eccentricity = new Decimal(satArray[idx].eccentricity);
+        let satellite = {}; //object containing only id and ECEF coordinates
+
+        const sat = satArray[idx];
+
+        const eccentricity = new Decimal(sat.eccentricity);
 
         //step two
 
-        a = new Decimal(satArray[idx].semimajorAxis);
+        a = new Decimal(sat.semimajorAxis);
         // temp = Decimal.div(my, aCubed);
         meanMotion = Decimal.sqrt(Decimal.div(my, Decimal.pow(a, 3)));
 
@@ -115,7 +118,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
         //temp = Decimal.mul(meanMotion, tk);
 
-        meanAnomaly = new Decimal(satArray[idx].meanAnomaly);
+        meanAnomaly = new Decimal(sat.meanAnomaly);
         Mk = meanAnomaly.plus(Decimal.mul(meanMotion, tk));
         Mk = Decimal.mod(Mk, 2 * Decimal.acos(-1));
 
@@ -134,8 +137,6 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
         //step five
 
-        //TODO: debug beyond this point
-
         eccSquared = Decimal.pow(eccentricity, 2);
         diff = one.minus(eccSquared);
         a = Decimal.sqrt(diff);
@@ -150,13 +151,13 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
         //step six
 
-        phik = vk.plus(satArray[idx].argumentOfPeriapsis);
+        phik = vk.plus(sat.argumentOfPeriapsis);
 
         // console.log(phik);
 
         //step seven
 
-        const A = new Decimal(satArray[idx].semimajorAxis);
+        const A = new Decimal(sat.semimajorAxis);
         temp = eccentricity.times(Decimal.cos(Ei));
         temp = one.minus(temp);
         rk = A.times(temp);
@@ -169,8 +170,8 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
         // console.log(xk, yk);
 
         //step nine
-        const rateOfRightAscension = new Decimal(satArray[idx].rightAscensionDot);
-        const rightAscension = new Decimal(satArray[idx].rightAscension);
+        const rateOfRightAscension = new Decimal(sat.rightAscensionDot);
+        const rightAscension = new Decimal(sat.rightAscension);
 
         bigOmegak = rightAscension.plus(tk.times(rateOfRightAscension.minus(omega))).minus(omega.times(almanach.toa));
 
@@ -178,24 +179,28 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
         //step ten
 
-        const orbitalInclination = new Decimal(satArray[idx].inclination);
+        const orbitalInclination = new Decimal(sat.inclination);
 
         Xk = xk.times(Decimal.cos(bigOmegak)).minus(yk.times(Decimal.cos(orbitalInclination).times(Decimal.sin(bigOmegak))));
         Yk = xk.times(Decimal.sin(bigOmegak)).plus(yk.times(Decimal.cos(orbitalInclination).times(Decimal.cos(bigOmegak))));
         Zk = yk.times(Decimal.sin(orbitalInclination));
 
-        ECEFCoordinates.push([Xk, Yk, Zk]);
+        satellite.id = sat.prn;
+        satellite.ECEFcoords = ([Xk, Yk, Zk]);
 
         // console.log(ECEFCoordinates);
 
-        if (satArray[idx].prn === 1) {
+        if (satellite.id === 1) {
             console.log("tk: " + tk + " n: " + meanMotion + " Mk:" + Mk + " Ei:" + Ei + " vk:" + vk + " phik:" + phik +
                 " rk:" + rk + "small coords: " + xk + ' ' + yk + " bigOmega: " + bigOmegak + " ecef coords: " + Xk + ' '
                 + Yk + ' ' + Zk)
         }
+
+        satellitesArray.push(satellite);
     }
 
-    return ECEFCoordinates;
+    console.log(satellitesArray);
+    return satellitesArray;
 }
 
 export default GetSatelliteECEFCoordinatesService;

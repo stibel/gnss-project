@@ -1,4 +1,6 @@
-import Decimal from "decimal.js";
+import Decimal from "decimal.js"
+import math from "math.js"
+
 import {degToRad} from "./GetSatelliteECEFCoordinatesService";
 
 const GetTopocentricCoordinatesService = (receiver, satellites) => {
