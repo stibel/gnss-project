@@ -3,7 +3,7 @@ import math from "math.js"
 
 import {degToRad} from "./GetSatelliteECEFCoordinatesService";
 
-const GetTopocentricCoordinatesService = (receiver, satellites) => {
+const GetTopocentricCoordinatesService = (receiver, satellite) => {
 
     let X, Y, Z; //receiver coordinates
 
@@ -29,10 +29,23 @@ const GetTopocentricCoordinatesService = (receiver, satellites) => {
     Y = (N.add(h)).times(Decimal.cos(phi).times(Decimal.sin(lambda)));
     Z = ((N.times(Decimal.sub(1, eSquared))).add(h)).times(Decimal.sin(phi));
 
-    //everything above this is ok
-
     console.log(X, Y, Z);
 
+    //everything above this is ok
+
+    const Xs = math.matrix(satellite.ECEFcoords);
+    const Xr = math.matrix([X, Y, Z]);
+    const Xsr = math.add(Xs, -Xr);
+
+    const RTneu = math.matrix(
+        [
+            [Decimal.mul(-1, Decimal.mul(Decimal.sin(phi), Decimal.cos(lambda))), Decimal.mul(-1, Decimal.mul(Decimal.sin(phi), Decimal.sin(lambda))), Decimal.cos(phi)],
+            [Decimal.mul(-1, Decimal.sin(lambda)), Decimal.cos(lambda), 0],
+            [Decimal.mul(Decimal.cos(phi), Decimal.cos(lambda)), Decimal.mul(Decimal.cos(phi), Decimal.cos(lambda)), Decimal.sin(phi)]
+        ]
+    )
+
+    const Xsrneu = math.multiply(RTneu, Xsr);
 }
 
 export default GetTopocentricCoordinatesService
