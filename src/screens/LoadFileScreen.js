@@ -5,6 +5,7 @@ import sem from 'gps-sem-parser';
 
 import mainTheme from "../styles/main";
 import PageWrapper from "../styles/Page";
+import Button from "../styles/Button";
 import GetSatelliteECEFCoordinatesService from "../services/GetSatelliteECEFCoordinatesService";
 import GetTopocentricCoordinatesService from "../services/GetTopocentricCoordinatesService";
 
@@ -37,16 +38,13 @@ const LoadFileScreen = (props) => {
 
     return (
         <ThemeProvider theme={mainTheme}>
-            <PageWrapper>
-                <div>
-                    load file
-                </div>
-                <ButtonWrapper onClick={read}>
+            <PageWrapper >
+                <Button onClick={read}>
                     Odczytaj plik
-                </ButtonWrapper>
-                <ButtonWrapper onClick={GetTopocentricCoordinatesService}>
+                </Button>
+                <Button onClick={GetTopocentricCoordinatesService}>
                     test
-                </ButtonWrapper>
+                </Button>
             </PageWrapper>
         </ThemeProvider>
     )
