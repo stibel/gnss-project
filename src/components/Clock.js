@@ -2,7 +2,7 @@ import React from "react";
 import "../styles/binaryClock.css";
 
 const Pip = ({isOn}) =>
-    <div className={`pip ${isOn && 'pip--on'}`}></div>
+    <div className={`pip ${isOn && 'pip--on'}`}/>
 
 const BinaryDigit = ({base2NumberAsArray}) =>
     <div className="binary-digit">

@@ -186,7 +186,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
         Zk = yk.times(Decimal.sin(orbitalInclination));
 
         satellite.id = sat.prn;
-        satellite.ECEFcoords = ([Xk, Yk, Zk]);
+        satellite.ECEFcoords = ([Xk.toNumber(), Yk.toNumber(), Zk.toNumber()]);
 
         // console.log(ECEFCoordinates);
 

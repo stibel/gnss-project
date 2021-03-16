@@ -11,8 +11,9 @@ const mainTheme = {
     },
     colours: {
         primary: '#1D1135',
-        secondary: '#FCFBFE',
-        details: '#BA1E68'
+        secondary: '#B1ADD6',
+        details: '#BA1E68',
+        detailsTwo: '#13CA91'
     }
 }
 

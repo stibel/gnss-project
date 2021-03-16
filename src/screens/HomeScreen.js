@@ -24,16 +24,28 @@ const ContentWrapper = styled.main`
   padding: 0;
   margin: 0;
   display: flex;
+  flex-flow: column;
   width: 50vw;
-  height: 50vh;
+  height: 90vh;
   align-items: center;
   justify-content: center;
+  text-align: center;
+`
+
+const ImageWrapper = styled.img`
+  width: 75%;
+  height: auto;
+`
+
+const VideoWrapper = styled.video`
+  width: 75%;
+  height: auto;
 `
 
 const HomeScreen = (props) => {
 
     const [apod, setApod] = useState(null);
-    const [fetched, setFetched] = useState(false);
+    const [loaded, setLoaded] = useState(false);
 
     const toastError = () => toast.error('Failed to fetch data from NASA API');
 
@@ -41,7 +53,7 @@ const HomeScreen = (props) => {
 
         fetch('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY')
             .then(res => res.ok ? res.json() : toastError())
-            .then(data => setApod(data)).then(fetched => setFetched(true))
+            .then(data => setApod(data)).then(loaded => setLoaded(true))
             .catch(err => console.error(err));
     }
 
@@ -61,11 +73,16 @@ const HomeScreen = (props) => {
                     Mikołaj Siebielec
                 </ContentWrapper>
                 <ContentWrapper>
-                    {fetched ?
-                        <div>
+                    {loaded ?
+                        <ContentWrapper>
                             <p>{apod.date} <br/> {apod.title}</p>
-                            <img src={apod.url} />
-                        </div>
+                            {apod.media_type === "image" ?
+                                <ImageWrapper src={apod.url}/>
+                                :
+                                <VideoWrapper src={apod.url}/>
+                            }
+                            <p>{apod.copyright}</p>
+                        </ContentWrapper>
                         :
                         <Loading type={"spin"} color={mainTheme.colours.details} height={"20%"} />
                     }

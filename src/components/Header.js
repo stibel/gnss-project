@@ -1,7 +1,6 @@
 import React from "react";
 import {NavLink} from "react-router-dom";
 import styled, {ThemeProvider} from "styled-components";
-import SkyBG from "react-sky-bg";
 
 import mainTheme from "../styles/main";
 import Clock from "./Clock";
@@ -14,18 +13,17 @@ const HeaderWrapper = styled.div`
   display: flex;
   flex-flow: row;
   justify-content: center;
+  background-image: linear-gradient(360deg, ${props => props.theme.colours.primary}, ${props => props.theme.colours.details});
 `
 
 const NavWrapper = styled.nav`
   padding: 0;
   margin: 0;
   height: 10vh;
-  width: 95vw;
+  width: 85vw;
   display: flex;
   flex-flow: row;
   justify-content: left;
-  z-index: 1;
-  position: absolute;
 `
 
 const ItemWrapper = styled.div`
@@ -38,7 +36,7 @@ const ItemWrapper = styled.div`
 
   @keyframes shadow{
     100% {
-      text-shadow: 2px 2px ${props => props.theme.colours.details};
+      text-shadow: 4px 4px ${props => props.theme.colours.details};
     }
   }
 
@@ -50,19 +48,18 @@ const ItemWrapper = styled.div`
 
 const style = {
     textDecoration: "none",
-    color: mainTheme.colours.primary
+    color: mainTheme.colours.secondary
 }
 
 const activeStyle = {
-    textShadow: "2px 2px" + mainTheme.colours.details
+    textShadow: "4px 4px" + mainTheme.colours.details
 }
 
 const ClockWrapper = styled.div`
-  width: 5vw;
+  width: 15vw;
   display: flex;
   align-items: center;
   justify-content: right;
-  position: absolute;
 `
 
 
@@ -70,7 +67,6 @@ const Header = (props) => {
     return (
         <ThemeProvider theme={mainTheme}>
             <HeaderWrapper>
-                <SkyBG />
                 <NavWrapper>
                     <ItemWrapper>
                         <NavLink
