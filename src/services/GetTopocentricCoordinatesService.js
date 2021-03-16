@@ -1,4 +1,3 @@
-import Decimal from "decimal.js"
 import math from "math.js"
 
 import {degToRad} from "./GetSatelliteECEFCoordinatesService";
@@ -10,24 +9,24 @@ const GetTopocentricCoordinatesService = (receiver, satellite) => {
     let temp;
 
     //hardcoded values for testing
-    const phi = degToRad(52), lambda = degToRad(21), h = new Decimal(100);
+    const phi = degToRad(52), lambda = degToRad(21), h = 100;
 
-    const a = new Decimal(6378137);
-    const eSquared = new Decimal(0.00669438002290);
-
-
-    temp = Decimal.sin(phi);
-    temp = Decimal.pow(temp, 2);
-    temp = temp.times(eSquared);
-    temp = Decimal.sub(1, temp);
-    const divider = Decimal.sqrt(temp);
+    const a = 6378137;
+    const eSquared = 0.00669438002290;
 
 
-    const N = Decimal.div(a, divider);
+    temp = Math.sin(phi);
+    temp = Math.pow(temp, 2);
+    temp *= eSquared;
+    temp = 1 - temp;
+    const divider = Math.sqrt(temp);
 
-    X = (N.add(h)).times(Decimal.cos(phi).times(Decimal.cos(lambda)));
-    Y = (N.add(h)).times(Decimal.cos(phi).times(Decimal.sin(lambda)));
-    Z = ((N.times(Decimal.sub(1, eSquared))).add(h)).times(Decimal.sin(phi));
+
+    const N = a / divider;
+
+    X = (N + h) * (Math.cos(phi) * (Math.cos(lambda)));
+    Y = (N + h) * (Math.cos(phi) * (Math.sin(lambda)));
+    Z = (N * (1 -  eSquared) + h) * (Math.sin(phi));
 
     console.log(X, Y, Z);
 
@@ -35,17 +34,40 @@ const GetTopocentricCoordinatesService = (receiver, satellite) => {
 
     const Xs = math.matrix(satellite.ECEFcoords);
     const Xr = math.matrix([X, Y, Z]);
-    const Xsr = math.add(Xs, -Xr);
+    math.multiply(-1, Xr)
+    const Xsr = math.add(Xs, Xr);
 
     const RTneu = math.matrix(
         [
-            [Decimal.mul(-1, Decimal.mul(Decimal.sin(phi), Decimal.cos(lambda))), Decimal.mul(-1, Decimal.mul(Decimal.sin(phi), Decimal.sin(lambda))), Decimal.cos(phi)],
-            [Decimal.mul(-1, Decimal.sin(lambda)), Decimal.cos(lambda), 0],
-            [Decimal.mul(Decimal.cos(phi), Decimal.cos(lambda)), Decimal.mul(Decimal.cos(phi), Decimal.cos(lambda)), Decimal.sin(phi)]
+            [-1 * Math.sin(phi) * Math.cos(lambda), -1 * Math.sin(lambda), Math.cos(phi) * Math.cos(lambda)],
+            [-1 * Math.sin(phi) * Math.sin(lambda), Math.cos(lambda), Math.cos(phi) * Math.cos(lambda)],
+            [Math.cos(phi), 0, Math.sin(phi)]
         ]
     )
 
     const Xsrneu = math.multiply(RTneu, Xsr);
+
+    // Xsrneu.forEach(function (value, index, matrix) {
+    //     console.log('value:', value, 'index:', index)
+    // })
+
+
+    //one of those, testing shall reveal
+    const n = Xsrneu[0, 0];
+    const e = Xsrneu[1, 0];
+    const u = Xsrneu[2, 0];
+
+    // const n = Xsrneu[0, 0];
+    // const e = Xsrneu[0, 1];
+    // const u = Xsrneu[0, 2];
+
+    const topoCoords = [n, e, u];
+
+    const Az = Math.atan(e / n);
+    const el = Math.asin(u / Math.sqrt(Math.pow(n, 2) + Math.pow(e, 2) + Math.pow(u, 2)));
+
+    return [topoCoords, Az, el];
+
 }
 
 export default GetTopocentricCoordinatesService

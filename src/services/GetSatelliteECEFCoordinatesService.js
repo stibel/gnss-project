@@ -4,7 +4,7 @@ const degToRad = (degrees) => {
 
     const degs = new Decimal(degrees);
     const pi = Decimal.acos(-1);
-    return degs.times(pi.div(180));
+    return (degs.times(pi.div(180))).toNumber();
 }
 
 const GetSatelliteECEFCoordinatesService = (almanach) => {

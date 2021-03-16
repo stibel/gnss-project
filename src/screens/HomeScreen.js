@@ -4,23 +4,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import mainTheme from "../styles/main";
+import PageWrapper from "../styles/Page";
 import Loading from "../components/Loading";
 
-const PageWrapper = styled.div`
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-flow: row;
-  justify-content: left;
-  width: 100vw;
-  height: 90vh;
-  background-image: linear-gradient(180deg, ${props => props.theme.colours.primary}, ${props => props.theme.colours.details});
-  font-family: ${props => props.theme.fonts.family};
-  font-size: ${props => props.theme.fonts.size.l};
-  -webkit-text-fill-color: ${props => props.theme.colours.secondary};
-`
-
-const ContentWrapper = styled.main`
+const ContentWrapper = styled.div`
   padding: 0;
   margin: 0;
   display: flex;
@@ -35,11 +22,15 @@ const ContentWrapper = styled.main`
 const ImageWrapper = styled.img`
   width: 75%;
   height: auto;
+  border-radius: 5%;
+  filter: drop-shadow(0 0 1vh ${props => props.theme.colours.detailsTwo});
 `
 
 const VideoWrapper = styled.video`
   width: 75%;
   height: auto;
+  border-radius: 5%;
+  filter: drop-shadow(0 0 1vh ${props => props.theme.colours.detailsTwo});
 `
 
 const HomeScreen = (props) => {
@@ -73,19 +64,19 @@ const HomeScreen = (props) => {
                     Mikołaj Siebielec
                 </ContentWrapper>
                 <ContentWrapper>
-                    {loaded ?
-                        <ContentWrapper>
-                            <p>{apod.date} <br/> {apod.title}</p>
-                            {apod.media_type === "image" ?
-                                <ImageWrapper src={apod.url}/>
-                                :
-                                <VideoWrapper src={apod.url}/>
-                            }
-                            <p>{apod.copyright}</p>
-                        </ContentWrapper>
-                        :
-                        <Loading type={"spin"} color={mainTheme.colours.details} height={"20%"} />
-                    }
+                {loaded ?
+                    <ContentWrapper>
+                        <p>{apod.date} <br/> {apod.title}</p>
+                        {apod.media_type === "image" ?
+                            <ImageWrapper src={apod.url}/>
+                            :
+                            <VideoWrapper src={apod.url}/>
+                        }
+                        <p>{apod.copyright}</p>
+                    </ContentWrapper>
+                    :
+                    <Loading type={"spin"} color={mainTheme.colours.details} height={"20%"} />
+                }
                 </ContentWrapper>
         </PageWrapper>
         </ThemeProvider>

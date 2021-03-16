@@ -1,19 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import {Link} from "react-router-dom";
-import styled from "styled-components";
+import styled, {ThemeProvider} from "styled-components";
 import sem from 'gps-sem-parser';
 
+import mainTheme from "../styles/main";
+import PageWrapper from "../styles/Page";
 import GetSatelliteECEFCoordinatesService from "../services/GetSatelliteECEFCoordinatesService";
 import GetTopocentricCoordinatesService from "../services/GetTopocentricCoordinatesService";
-
-const PageWrapper = styled.main`
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-flow: column;
-  width: 100vw;
-  height: 90vh;
-`
 
 export const ButtonWrapper = styled.div`
   cursor: pointer;
@@ -43,20 +36,19 @@ const LoadFileScreen = (props) => {
     }
 
     return (
-        <PageWrapper>
-            <div>
-                load file
-            </div>
-            <ButtonWrapper onClick={read}>
-                Odczytaj plik
-            </ButtonWrapper>
-            <Link to={"/"}>
-                wstecz
-            </Link>
-            {/*<ButtonWrapper onClick={GetTopocentricCoordinatesService}>*/}
-            {/*    test*/}
-            {/*</ButtonWrapper>*/}
-        </PageWrapper>
+        <ThemeProvider theme={mainTheme}>
+            <PageWrapper>
+                <div>
+                    load file
+                </div>
+                <ButtonWrapper onClick={read}>
+                    Odczytaj plik
+                </ButtonWrapper>
+                <ButtonWrapper onClick={GetTopocentricCoordinatesService}>
+                    test
+                </ButtonWrapper>
+            </PageWrapper>
+        </ThemeProvider>
     )
 }
 
