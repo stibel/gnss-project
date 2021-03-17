@@ -1,4 +1,4 @@
-import math from "math.js"
+import * as math from 'mathjs';
 
 import {degToRad} from "./GetSatelliteECEFCoordinatesService";
 
@@ -36,6 +36,7 @@ const GetTopocentricCoordinatesService = (receiver, satellite) => {
     const Xr = math.matrix([X, Y, Z]);
     math.multiply(-1, Xr)
     const Xsr = math.add(Xs, Xr);
+    // console.log(Xs, Xr, Xsr);
 
     const RTneu = math.matrix(
         [
@@ -47,27 +48,20 @@ const GetTopocentricCoordinatesService = (receiver, satellite) => {
 
     const Xsrneu = math.multiply(RTneu, Xsr);
 
-    // Xsrneu.forEach(function (value, index, matrix) {
-    //     console.log('value:', value, 'index:', index)
-    // })
+    // console.log(RTneu, Xsrneu)
 
+    Xsrneu.forEach(function (value, index, matrix) {
+        console.log('value:', value, 'index:', index)
+    })
 
-    //one of those, testing shall reveal
-    const n = Xsrneu[0, 0];
-    const e = Xsrneu[1, 0];
-    const u = Xsrneu[2, 0];
+    const n = Xsrneu.subset(math.index(0));
+    const e = Xsrneu.subset(math.index(1));
+    const u = Xsrneu.subset(math.index(2));
 
-    // const n = Xsrneu[0, 0];
-    // const e = Xsrneu[0, 1];
-    // const u = Xsrneu[0, 2];
+    const Az = math.atan(e / n);
+    const el = math.asin(u / math.sqrt(math.pow(n, 2) + math.pow(e, 2) + math.pow(u, 2)));
 
-    const topoCoords = [n, e, u];
-
-    const Az = Math.atan(e / n);
-    const el = Math.asin(u / Math.sqrt(Math.pow(n, 2) + Math.pow(e, 2) + Math.pow(u, 2)));
-
-    return [topoCoords, Az, el];
-
+    return [n, e, u, Az, el];
 }
 
 export default GetTopocentricCoordinatesService

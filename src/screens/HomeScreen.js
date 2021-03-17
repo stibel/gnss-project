@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import mainTheme from "../styles/main";
 import PageWrapper from "../styles/Page";
 import Loading from "../components/Loading";
+import ToastError from "../services/SignalErrorService";
 
 const ContentWrapper = styled.div`
   padding: 0;
@@ -20,15 +21,15 @@ const ContentWrapper = styled.div`
 `
 
 const ImageWrapper = styled.img`
-  width: 75%;
-  height: auto;
+  height: 70%;
+  width: auto;
   border-radius: 5%;
   filter: drop-shadow(0 0 1vh ${props => props.theme.colours.detailsTwo});
 `
 
 const VideoWrapper = styled.video`
-  width: 75%;
-  height: auto;
+  height: 70%;
+  width: auto;
   border-radius: 5%;
   filter: drop-shadow(0 0 1vh ${props => props.theme.colours.detailsTwo});
 `
@@ -38,12 +39,10 @@ const HomeScreen = (props) => {
     const [apod, setApod] = useState(null);
     const [loaded, setLoaded] = useState(false);
 
-    const toastError = () => toast.error('Failed to fetch data from NASA API');
-
     const getAPOD = () => {
 
         fetch('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY')
-            .then(res => res.ok ? res.json() : toastError())
+            .then(res => res.ok ? res.json() : ToastError('Failed to fetch data from NASA API'))
             .then(data => setApod(data)).then(loaded => setLoaded(true))
             .catch(err => console.error(err));
     }
