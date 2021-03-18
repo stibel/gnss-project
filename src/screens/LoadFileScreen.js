@@ -18,8 +18,7 @@ const LoadFileScreen = (props) => {
 
     const [alm, setAlm] = useState();
     const [fileLoaded, setFileLoaded] = useState(false);
-    let EFECCoords = [];
-    let topo = [];
+    let sats = [];
 
     const read = () => {
         fetch('./data/data.sem')
@@ -34,8 +33,8 @@ const LoadFileScreen = (props) => {
         }, [alm])
 
     if (fileLoaded) {
-        EFECCoords = GetSatelliteECEFCoordinatesService(alm);
-        topo = GetTopocentricCoordinatesService(false, EFECCoords[0]);
+        sats = GetSatelliteECEFCoordinatesService(alm); //get sat ECEF coordinates
+        sats = GetTopocentricCoordinatesService(false, sats); //get sat azimuth and elevation
     }
 
     return (
@@ -44,7 +43,7 @@ const LoadFileScreen = (props) => {
                 <Button onClick={read}>
                     Odczytaj plik
                 </Button>
-                <Button onClick={console.log(EFECCoords + " topo: " + topo)}>
+                <Button onClick={console.log(sats)}>
                     test
                 </Button>
             </PageWrapper>

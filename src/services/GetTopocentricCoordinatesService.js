@@ -2,11 +2,9 @@ import * as math from 'mathjs';
 
 import {degToRad} from "./GetSatelliteECEFCoordinatesService";
 
-const GetTopocentricCoordinatesService = (receiver, satellite) => {
+const GetTopocentricCoordinatesService = (receiver, satellites) => {
 
     let X, Y, Z; //receiver coordinates
-
-    let temp;
 
     //hardcoded values for testing
     const phi = degToRad(52), lambda = degToRad(21), h = 100;
@@ -14,7 +12,7 @@ const GetTopocentricCoordinatesService = (receiver, satellite) => {
     const a = 6378137;
     const eSquared = 0.00669438002290;
 
-
+    let temp;
     temp = Math.sin(phi);
     temp = Math.pow(temp, 2);
     temp *= eSquared;
@@ -32,36 +30,45 @@ const GetTopocentricCoordinatesService = (receiver, satellite) => {
 
     //everything above this is ok
 
-    const Xs = math.matrix(satellite.ECEFcoords);
-    const Xr = math.matrix([X, Y, Z]);
-    math.multiply(-1, Xr)
-    const Xsr = math.add(Xs, Xr);
-    // console.log(Xs, Xr, Xsr);
+    let satellitesArray = [];
 
-    const RTneu = math.matrix(
-        [
-            [-1 * Math.sin(phi) * Math.cos(lambda), -1 * Math.sin(lambda), Math.cos(phi) * Math.cos(lambda)],
-            [-1 * Math.sin(phi) * Math.sin(lambda), Math.cos(lambda), Math.cos(phi) * Math.cos(lambda)],
-            [Math.cos(phi), 0, Math.sin(phi)]
-        ]
-    )
+    for (const idx in satellites) {
 
-    const Xsrneu = math.multiply(RTneu, Xsr);
+        let s = satellites[idx];
 
-    // console.log(RTneu, Xsrneu)
+        const Xs = math.matrix(s.ECEFcoords);
+        const Xr = math.matrix([X, Y, Z]);
+        math.multiply(-1, Xr)
+        const Xsr = math.add(Xs, Xr);
+        // console.log(Xs, Xr, Xsr);
 
-    Xsrneu.forEach(function (value, index, matrix) {
-        console.log('value:', value, 'index:', index)
-    })
+        const RTneu = math.matrix(
+            [
+                [-1 * Math.sin(phi) * Math.cos(lambda), -1 * Math.sin(lambda), Math.cos(phi) * Math.cos(lambda)],
+                [-1 * Math.sin(phi) * Math.sin(lambda), Math.cos(lambda), Math.cos(phi) * Math.cos(lambda)],
+                [Math.cos(phi), 0, Math.sin(phi)]
+            ]
+        )
 
-    const n = Xsrneu.subset(math.index(0));
-    const e = Xsrneu.subset(math.index(1));
-    const u = Xsrneu.subset(math.index(2));
+        const Xsrneu = math.multiply(RTneu, Xsr);
 
-    const Az = math.atan(e / n);
-    const el = math.asin(u / math.sqrt(math.pow(n, 2) + math.pow(e, 2) + math.pow(u, 2)));
+        // console.log(RTneu, Xsrneu)
 
-    return [n, e, u, Az, el];
+        // Xsrneu.forEach(function (value, index, matrix) {
+        //     console.log('value:', value, 'index:', index)
+        // })
+
+        const n = Xsrneu.subset(math.index(0));
+        const e = Xsrneu.subset(math.index(1));
+        const u = Xsrneu.subset(math.index(2));
+
+        s.Az = math.atan(e / n);
+        s.el = math.asin(u / math.sqrt(math.pow(n, 2) + math.pow(e, 2) + math.pow(u, 2)));
+
+        satellitesArray.push(s);
+    }
+
+    return satellitesArray;
 }
 
 export default GetTopocentricCoordinatesService
