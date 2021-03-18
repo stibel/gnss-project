@@ -7,23 +7,14 @@ import mainTheme from "../styles/main";
 import PageWrapper from "../styles/Page";
 import Button from "../styles/Button";
 import ToastError from "../services/SignalErrorService";
-import GetSatelliteECEFCoordinatesService from "../services/GetSatelliteECEFCoordinatesService";
 import GetTopocentricCoordinatesService from "../services/GetTopocentricCoordinatesService";
-
-export const ButtonWrapper = styled.div`
-  cursor: pointer;
-  -webkit-text-fill-color: red;
-`
 
 const LoadFileScreen = (props) => {
 
     const [alm, setAlm] = useState();
     const [fileLoaded, setFileLoaded] = useState(false);
     const [sats, setSats] = useState([]);
-    const [areSet, setAreSet] = useState(false);
-    let satsTemp = [];
 
-    console.log(fileLoaded);
     const read = () => {
         fetch('./data/data.sem')
             .then(res => {res.text()
