@@ -1,19 +1,13 @@
 import React, {useState, useEffect} from 'react';
 import {Link} from "react-router-dom";
-import styled from "styled-components";
+import styled, {ThemeProvider} from "styled-components";
 import sem from 'gps-sem-parser';
 
+import mainTheme from "../styles/main";
+import PageWrapper from "../styles/Page";
+import Button from "../styles/Button";
 import GetSatelliteECEFCoordinatesService from "../services/GetSatelliteECEFCoordinatesService";
 import GetTopocentricCoordinatesService from "../services/GetTopocentricCoordinatesService";
-
-const PageWrapper = styled.main`
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-flow: column;
-  width: 100vw;
-  height: 90vh;
-`
 
 export const ButtonWrapper = styled.div`
   cursor: pointer;
@@ -24,7 +18,7 @@ const LoadFileScreen = (props) => {
 
     const [alm, setAlm] = useState();
     const [fileLoaded, setFileLoaded] = useState(false);
-    let EFECCoords = [];
+    let sats = [];
 
     const read = () => {
         fetch('./data/data.sem')
@@ -39,30 +33,21 @@ const LoadFileScreen = (props) => {
         }, [alm])
 
     if (fileLoaded) {
-        EFECCoords = GetSatelliteECEFCoordinatesService(alm);
+        sats = GetSatelliteECEFCoordinatesService(alm); //get sat ECEF coordinates
+        sats = GetTopocentricCoordinatesService(false, sats); //get sat azimuth and elevation
     }
 
     return (
-        <PageWrapper>
-            <div>
-                load file
-            </div>
-            <ButtonWrapper onClick={read}>
-                Odczytaj plik
-            </ButtonWrapper>
-            <Link to={"/"}>
-                wstecz
-            </Link>
-            {/*<ButtonWrapper onClick={calc}>*/}
-            {/*    policz ruch średni*/}
-            {/*</ButtonWrapper>*/}
-            {/*<ButtonWrapper onClick={toWeekNo}>*/}
-            {/*    policz czas (tk)*/}
-            {/*</ButtonWrapper>*/}
-            <ButtonWrapper onClick={GetTopocentricCoordinatesService}>
-                test
-            </ButtonWrapper>
-        </PageWrapper>
+        <ThemeProvider theme={mainTheme}>
+            <PageWrapper >
+                <Button onClick={read}>
+                    Odczytaj plik
+                </Button>
+                <Button onClick={console.log(sats)}>
+                    test
+                </Button>
+            </PageWrapper>
+        </ThemeProvider>
     )
 }
 

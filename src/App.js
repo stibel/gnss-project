@@ -4,7 +4,6 @@ import {BrowserRouter as Router,
     Route} from "react-router-dom";
 import HomeScreen from "./screens/HomeScreen";
 import LoadFileScreen from './screens/LoadFileScreen';
-import CalcTimeScreen from "./screens/CalculateTimeScreen";
 import Header from "./components/Header";
 
 const App = () => {
@@ -17,9 +16,6 @@ const App = () => {
             </Route>
             <Route path={"/Load"}>
                 <LoadFileScreen />
-            </Route>
-            <Route path={"/Calc"}>
-                <CalcTimeScreen />
             </Route>
         </Switch>
     </Router>

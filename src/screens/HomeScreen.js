@@ -1,30 +1,49 @@
 import React, {useState, useEffect} from 'react';
-import {Link} from 'react-router-dom';
-import styled from"styled-components";
+import styled, {ThemeProvider} from"styled-components";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const PageWrapper = styled.div`
+import mainTheme from "../styles/main";
+import PageWrapper from "../styles/Page";
+import Loading from "../components/Loading";
+import ToastError from "../services/SignalErrorService";
+
+const ContentWrapper = styled.div`
   padding: 0;
   margin: 0;
   display: flex;
   flex-flow: column;
-  width: 100vw;
+  width: 50vw;
   height: 90vh;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+`
+
+const ImageWrapper = styled.img`
+  height: 70%;
+  width: auto;
+  border-radius: 5%;
+  filter: drop-shadow(0 0 1vh ${props => props.theme.colours.detailsTwo});
+`
+
+const VideoWrapper = styled.video`
+  height: 70%;
+  width: auto;
+  border-radius: 5%;
+  filter: drop-shadow(0 0 1vh ${props => props.theme.colours.detailsTwo});
 `
 
 const HomeScreen = (props) => {
 
     const [apod, setApod] = useState(null);
-    const [fetched, setFetched] = useState(false);
-
-    const toastError = () => toast.error('Failed to fetch data from NASA API');
+    const [loaded, setLoaded] = useState(false);
 
     const getAPOD = () => {
 
         fetch('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY')
-            .then(res => res.ok ? res.json() : toastError())
-            .then(data => setApod(data)).then(fetched => setFetched(true))
+            .then(res => res.ok ? res.json() : ToastError('Failed to fetch data from NASA API'))
+            .then(data => setApod(data)).then(loaded => setLoaded(true))
             .catch(err => console.error(err));
     }
 
@@ -37,20 +56,31 @@ const HomeScreen = (props) => {
     }, [apod])
 
     return (
-        <PageWrapper>
-                home page
-                <Link to={"/Load"}>Załaduj plika</Link>
-                <Link to={"/Calc"}>Przelicz czas</Link>
-            {fetched ?
-                <div>
-                    <p>{apod.date} : {apod.title}</p>
-                    <a href={apod.url} target={"_blank"} rel={"noopener"}>Zobacz zdjęcie</a>
-                </div>
-                :
-                <p>Ładowanie...</p>
-            }
-            <ToastContainer />
+        <div>
+        <ThemeProvider theme = {mainTheme}>
+            <PageWrapper>
+                <ContentWrapper>
+                    Mikołaj Siebielec
+                </ContentWrapper>
+                <ContentWrapper>
+                {loaded ?
+                    <ContentWrapper>
+                        <p>{apod.date} <br/> {apod.title}</p>
+                        {apod.media_type === "image" ?
+                            <ImageWrapper src={apod.url}/>
+                            :
+                            <VideoWrapper src={apod.url}/>
+                        }
+                        <p>{apod.copyright}</p>
+                    </ContentWrapper>
+                    :
+                    <Loading type={"spin"} color={mainTheme.colours.details} height={"20%"} />
+                }
+                </ContentWrapper>
         </PageWrapper>
+        </ThemeProvider>
+        <ToastContainer />
+        </div>
     )
 }
 
