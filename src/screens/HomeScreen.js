@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import styled, {ThemeProvider} from"styled-components";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import mainTheme from "../styles/main";
@@ -65,13 +65,13 @@ const HomeScreen = (props) => {
                 <ContentWrapper>
                 {loaded ?
                     <ContentWrapper>
-                        <p>{apod.date} <br/> {apod.title}</p>
+                        <p style={{fontSize: mainTheme.fonts.size.m}}> {apod.date} <br/> {apod.title}</p>
                         {apod.media_type === "image" ?
                             <ImageWrapper src={apod.url}/>
                             :
                             <VideoWrapper src={apod.url}/>
                         }
-                        <p>{apod.copyright}</p>
+                        <p style={{fontSize: mainTheme.fonts.size.s}}>{apod.copyright}</p>
                     </ContentWrapper>
                     :
                     <Loading type={"spin"} color={mainTheme.colours.details} height={"20%"} />

@@ -1,8 +1,11 @@
 import * as math from 'mathjs';
 
+import GetSatelliteECEFCoordinatesService from "./GetSatelliteECEFCoordinatesService";
 import {degToRad} from "./GetSatelliteECEFCoordinatesService";
 
-const GetTopocentricCoordinatesService = (receiver, satellites) => {
+const GetTopocentricCoordinatesService = (receiver, almanach) => {
+
+    const satellites = GetSatelliteECEFCoordinatesService(almanach);
 
     let X, Y, Z; //receiver coordinates
 
@@ -33,7 +36,6 @@ const GetTopocentricCoordinatesService = (receiver, satellites) => {
     let satellitesArray = [];
 
     for (const idx in satellites) {
-
         let s = satellites[idx];
 
         const Xs = math.matrix(s.ECEFcoords);
@@ -68,6 +70,7 @@ const GetTopocentricCoordinatesService = (receiver, satellites) => {
         satellitesArray.push(s);
     }
 
+    console.log(satellitesArray);
     return satellitesArray;
 }
 
