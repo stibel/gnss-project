@@ -3,7 +3,7 @@ import * as math from 'mathjs';
 import GetSatelliteECEFCoordinatesService from "./GetSatelliteECEFCoordinatesService";
 import {degToRad} from "./GetSatelliteECEFCoordinatesService";
 
-const GetTopocentricCoordinatesService = (receiver, almanach) => {
+const GetTopocentricCoordinatesService = (receiver, almanach, observationMask = 0) => {
 
     const satellites = GetSatelliteECEFCoordinatesService(almanach);
 
@@ -35,42 +35,34 @@ const GetTopocentricCoordinatesService = (receiver, almanach) => {
 
     let satellitesArray = [];
 
+    const Rneu = math.matrix(
+        [
+            [-1 * Math.sin(phi) * Math.cos(lambda), -1 * Math.sin(lambda), Math.cos(phi) * Math.cos(lambda)],
+            [-1 * Math.sin(phi) * Math.sin(lambda), Math.cos(lambda), Math.cos(phi) * Math.cos(lambda)],
+            [Math.cos(phi), 0, Math.sin(phi)]
+        ]
+    )
+
     for (const idx in satellites) {
         let s = satellites[idx];
 
-        const Xs = math.matrix(s.ECEFcoords);
-        const Xr = math.matrix([X, Y, Z]);
-        math.multiply(-1, Xr)
-        const Xsr = math.add(Xs, Xr);
-        // console.log(Xs, Xr, Xsr);
+        const Xsr = [s.ECEFcoords[0] - X, s.ECEFcoords[1] - Y, s.ECEFcoords[2] - Z];
 
-        const RTneu = math.matrix(
-            [
-                [-1 * Math.sin(phi) * Math.cos(lambda), -1 * Math.sin(lambda), Math.cos(phi) * Math.cos(lambda)],
-                [-1 * Math.sin(phi) * Math.sin(lambda), Math.cos(lambda), Math.cos(phi) * Math.cos(lambda)],
-                [Math.cos(phi), 0, Math.sin(phi)]
-            ]
-        )
-
-        const Xsrneu = math.multiply(RTneu, Xsr);
-
-        // console.log(RTneu, Xsrneu)
-
-        // Xsrneu.forEach(function (value, index, matrix) {
-        //     console.log('value:', value, 'index:', index)
-        // })
+        const Xsrneu = math.multiply(math.transpose(Rneu), Xsr);
 
         const n = Xsrneu.subset(math.index(0));
         const e = Xsrneu.subset(math.index(1));
         const u = Xsrneu.subset(math.index(2));
 
+        s.neu = [n, e, u];
         s.Az = math.atan(e / n);
         s.el = math.asin(u / math.sqrt(math.pow(n, 2) + math.pow(e, 2) + math.pow(u, 2)));
+        s.ro = math.norm(Xsr);
 
-        satellitesArray.push(s);
+        if (s.el > observationMask)
+            satellitesArray.push(s);
     }
 
-    console.log(satellitesArray);
     return satellitesArray;
 }
 

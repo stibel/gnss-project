@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {ToastContainer} from "react-toastify";
-import styled, {ThemeProvider} from "styled-components";
+import {ThemeProvider} from "styled-components";
 import sem from 'gps-sem-parser';
 
 import mainTheme from "../styles/main";
