@@ -15,12 +15,11 @@ const LoadFileScreen = (props) => {
     const [fileLoaded, setFileLoaded] = useState(false);
     const [sats, setSats] = useState([]);
 
-    const read = () => {
-        fetch('./data/data.sem')
-            .then(res => {res.text()
-                .then(alm => setAlm(sem(alm)))
-                .then(fileLoaded => setFileLoaded(true));
-        });
+    const read = async () => {
+        const data = await fetch('./data/data.sem');
+        const text = await data.text();
+        setAlm(sem(text));
+        setFileLoaded(true);
     }
 
     useEffect(() => {
