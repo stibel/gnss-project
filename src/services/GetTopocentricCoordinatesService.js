@@ -3,9 +3,7 @@ import * as math from 'mathjs';
 import GetSatelliteECEFCoordinatesService from "./GetSatelliteECEFCoordinatesService";
 import {degToRad} from "./GetSatelliteECEFCoordinatesService";
 
-const GetTopocentricCoordinatesService = (receiver, almanach, observationMask = 0) => {
-
-    const satellites = GetSatelliteECEFCoordinatesService(almanach);
+const GetTopocentricCoordinatesService = (receiver, satellites, observationMask = 0) => {
 
     let X, Y, Z; //receiver coordinates
 
@@ -21,7 +19,6 @@ const GetTopocentricCoordinatesService = (receiver, almanach, observationMask = 
     temp *= eSquared;
     temp = 1 - temp;
     const divider = Math.sqrt(temp);
-
 
     const N = a / divider;
 
@@ -55,7 +52,7 @@ const GetTopocentricCoordinatesService = (receiver, almanach, observationMask = 
         const u = Xsrneu.subset(math.index(2));
 
         s.neu = [n, e, u];
-        s.Az = math.atan(e / n);
+        s.Az = math.atan2(e, n);
         s.el = math.asin(u / math.sqrt(math.pow(n, 2) + math.pow(e, 2) + math.pow(u, 2)));
         s.ro = math.norm(Xsr);
 

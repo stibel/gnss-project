@@ -8,6 +8,7 @@ import PageWrapper from "../styles/Page";
 import Button from "../styles/Button";
 import ToastError from "../services/SignalErrorService";
 import GetTopocentricCoordinatesService from "../services/GetTopocentricCoordinatesService";
+import GetDOPService from "../services/GetDOPService";
 
 const LoadFileScreen = (props) => {
 
@@ -27,17 +28,11 @@ const LoadFileScreen = (props) => {
         }, [alm])
 
     const set  = () => {
-        if (!fileLoaded) {
+        if (!fileLoaded)
             ToastError("Load the file first!");
-        }
-        else {
-            setSats([...GetTopocentricCoordinatesService(false, alm)]);
-        }
+        else
+            setSats([...GetDOPService(false, alm)]);
     }
-
-    useEffect(() => {
-        console.log(fileLoaded);
-    }, [fileLoaded])
 
     useEffect(() => {
         console.log(sats);
@@ -51,7 +46,7 @@ const LoadFileScreen = (props) => {
                     Odczytaj plik
                 </Button>
                 <Button onClick={set}>
-                    test
+                    Oblicz
                 </Button>
             </PageWrapper>
         </ThemeProvider>
