@@ -36,7 +36,7 @@ const LoadFileScreen = (props) => {
     }
 
     const setDilution = () => {
-        if (!fileLoaded || sats === [])
+        if (!fileLoaded || !sats.length)
             ToastError("Load the file first!");
         else
             setDOP(GetDOPService(sats));
