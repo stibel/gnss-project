@@ -36,8 +36,6 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
     const my = new Decimal(3.986004415 * Math.pow(10, 14))
     const omega = new Decimal(7.2921151467 * Math.pow(10, -5))
 
-    console.log("omega: " + omega);
-
     let satellitesArray = []; //array of satellites to be returned
 
     for (const idx in satArray) {
@@ -103,7 +101,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
         satellitesArray.push(satellite);
     }
-    console.log(satellitesArray);
+    // console.log(satellitesArray);
     return satellitesArray;
 }
 

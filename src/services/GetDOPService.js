@@ -2,6 +2,7 @@ import * as math from 'mathjs'
 import {degToRad} from "./GetSatelliteECEFCoordinatesService";
 import GetSatelliteECEFCoordinatesService from "./GetSatelliteECEFCoordinatesService";
 import GetTopocentricCoordinatesService from "./GetTopocentricCoordinatesService";
+import main from "../styles/main";
 
 const GetDOPService = (receiver, almanach, observationMask = 0) => {
 
@@ -27,6 +28,15 @@ const GetDOPService = (receiver, almanach, observationMask = 0) => {
     const Y = (N + h) * (Math.cos(phi) * (Math.sin(lambda)));
     const Z = (N * (1 -  eSquared) + h) * (Math.sin(phi));
 
+    const Rneu = math.matrix(
+        [
+            [-1 * Math.sin(phi) * Math.cos(lambda), -1 * Math.sin(lambda), Math.cos(phi) * Math.cos(lambda)],
+            [-1 * Math.sin(phi) * Math.sin(lambda), Math.cos(lambda), Math.cos(phi) * Math.sin(lambda)],
+            [Math.cos(phi), 0, Math.sin(phi)]
+        ]
+    )
+
+
     let deltaPs = [];
 
     for (const idx in satellites) {
@@ -48,6 +58,36 @@ const GetDOPService = (receiver, almanach, observationMask = 0) => {
     Q = math.inv(Q);
 
     console.log(Q);
+
+    const mainDiag = math.diag(Q);
+
+    const GDOP = Math.sqrt(mainDiag.subset(math.index(0)) + mainDiag.subset(math.index(1)) + mainDiag.subset(math.index(2)) + mainDiag.subset(math.index(3)));
+
+    const PDOP = Math.sqrt(mainDiag.subset(math.index(0)) + mainDiag.subset(math.index(1)) + mainDiag.subset(math.index(2)));
+
+    const TDOP = Math.sqrt(mainDiag.subset(math.index(3)));
+
+    console.log("G " + GDOP + " P " + PDOP + " T " + TDOP);
+
+    const Qxyz = math.subset(Q, math.index([0, 1, 2], [0, 1, 2]))
+    // console.log(Qxyz);
+
+    const Qneu = math.multiply(math.transpose(Rneu), Qxyz, Rneu);
+
+    // console.log(Qneu);
+
+    const mainDiagQneu = math.diag(Qneu);
+
+    const HDOP = Math.sqrt(mainDiagQneu.subset(math.index(0)) + mainDiagQneu.subset(math.index(1)));
+
+    const VDOP = Math.sqrt(mainDiagQneu.subset(math.index(2)));
+
+    console.log("H " + HDOP + " V " + VDOP);
+
+    const PDOPneu = Math.sqrt(mainDiagQneu.subset(math.index(0)) + mainDiagQneu.subset(math.index(1)) + mainDiagQneu.subset(math.index(2)));
+
+    console.log("P " + PDOP);
+    console.log("Pneu " + PDOPneu);
 
     return satellites;
 }

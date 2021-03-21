@@ -64,7 +64,7 @@ const HomeScreen = (props) => {
     }, [apod])
 
     return (
-        <div>
+        <>
         <ThemeProvider theme = {mainTheme}>
             <PageWrapper>
                 <ContentWrapper>
@@ -88,7 +88,7 @@ const HomeScreen = (props) => {
         </PageWrapper>
         </ThemeProvider>
         <ToastContainer />
-        </div>
+        </>
     )
 }
 

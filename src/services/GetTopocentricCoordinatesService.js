@@ -26,7 +26,7 @@ const GetTopocentricCoordinatesService = (receiver, satellites, observationMask 
     Y = (N + h) * (Math.cos(phi) * (Math.sin(lambda)));
     Z = (N * (1 -  eSquared) + h) * (Math.sin(phi));
 
-    console.log(X, Y, Z);
+    // console.log(X, Y, Z);
 
     //everything above this is ok
 
