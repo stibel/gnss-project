@@ -35,7 +35,7 @@ const GetTopocentricCoordinatesService = (receiver, satellites, observationMask 
     const Rneu = math.matrix(
         [
             [-1 * Math.sin(phi) * Math.cos(lambda), -1 * Math.sin(lambda), Math.cos(phi) * Math.cos(lambda)],
-            [-1 * Math.sin(phi) * Math.sin(lambda), Math.cos(lambda), Math.cos(phi) * Math.cos(lambda)],
+            [-1 * Math.sin(phi) * Math.sin(lambda), Math.cos(lambda), Math.cos(phi) * Math.sin(lambda)],
             [Math.cos(phi), 0, Math.sin(phi)]
         ]
     )
@@ -52,8 +52,10 @@ const GetTopocentricCoordinatesService = (receiver, satellites, observationMask 
         const u = Xsrneu.subset(math.index(2));
 
         s.neu = [n, e, u];
-        s.Az = math.atan2(e, n);
-        s.el = math.asin(u / math.sqrt(math.pow(n, 2) + math.pow(e, 2) + math.pow(u, 2)));
+        s.Az = Math.atan2(e, n) * 180 / Math.PI;
+        if (s.Az < 0)
+            s.Az += 360;
+        s.el = Math.asin(u / Math.sqrt(Math.pow(n, 2) + Math.pow(e, 2) + Math.pow(u, 2))) * 180 / Math.PI;
         s.ro = math.norm(Xsr);
 
         if (s.el > observationMask)
