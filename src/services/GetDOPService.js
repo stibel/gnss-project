@@ -1,13 +1,7 @@
 import * as math from 'mathjs'
 import {degToRad} from "./GetSatelliteECEFCoordinatesService";
-import GetSatelliteECEFCoordinatesService from "./GetSatelliteECEFCoordinatesService";
-import GetTopocentricCoordinatesService from "./GetTopocentricCoordinatesService";
-import main from "../styles/main";
 
-const GetDOPService = (receiver, almanach, observationMask = 0) => {
-
-    let satellites = GetSatelliteECEFCoordinatesService(almanach);
-    satellites = GetTopocentricCoordinatesService(receiver, satellites, observationMask);
+const GetDOPService = (satellites) => {
 
     //receiver coordinates, hardcoded for testing
     const phi = degToRad(52), lambda = degToRad(21), h = 100;
@@ -57,7 +51,7 @@ const GetDOPService = (receiver, almanach, observationMask = 0) => {
 
     Q = math.inv(Q);
 
-    console.log(Q);
+    // console.log(Q);
 
     const mainDiag = math.diag(Q);
 
@@ -67,14 +61,11 @@ const GetDOPService = (receiver, almanach, observationMask = 0) => {
 
     const TDOP = Math.sqrt(mainDiag.subset(math.index(3)));
 
-    console.log("G " + GDOP + " P " + PDOP + " T " + TDOP);
+    // console.log("G " + GDOP + " P " + PDOP + " T " + TDOP);
 
     const Qxyz = math.subset(Q, math.index([0, 1, 2], [0, 1, 2]))
-    // console.log(Qxyz);
 
     const Qneu = math.multiply(math.transpose(Rneu), Qxyz, Rneu);
-
-    // console.log(Qneu);
 
     const mainDiagQneu = math.diag(Qneu);
 
@@ -82,14 +73,22 @@ const GetDOPService = (receiver, almanach, observationMask = 0) => {
 
     const VDOP = Math.sqrt(mainDiagQneu.subset(math.index(2)));
 
-    console.log("H " + HDOP + " V " + VDOP);
+    // console.log("H " + HDOP + " V " + VDOP);
 
     const PDOPneu = Math.sqrt(mainDiagQneu.subset(math.index(0)) + mainDiagQneu.subset(math.index(1)) + mainDiagQneu.subset(math.index(2)));
 
-    console.log("P " + PDOP);
-    console.log("Pneu " + PDOPneu);
+    // console.log("P " + PDOP);
+    // console.log("Pneu " + PDOPneu);
 
-    return satellites;
+    let DOP = {};
+
+    DOP.G = GDOP;
+    DOP.P = PDOP;
+    DOP.T = TDOP;
+    DOP.H = HDOP;
+    DOP.V = VDOP;
+
+    return DOP;
 }
 
 export default GetDOPService

@@ -3,7 +3,9 @@ import * as math from 'mathjs';
 import GetSatelliteECEFCoordinatesService from "./GetSatelliteECEFCoordinatesService";
 import {degToRad} from "./GetSatelliteECEFCoordinatesService";
 
-const GetTopocentricCoordinatesService = (receiver, satellites, observationMask = 0) => {
+const GetTopocentricCoordinatesService = (receiver, almanach, observationMask = 0) => {
+
+    const satellites = GetSatelliteECEFCoordinatesService(almanach);
 
     let X, Y, Z; //receiver coordinates
 

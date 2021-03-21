@@ -15,6 +15,7 @@ const LoadFileScreen = (props) => {
     const [alm, setAlm] = useState();
     const [fileLoaded, setFileLoaded] = useState(false);
     const [sats, setSats] = useState([]);
+    const [DOP, setDOP] = useState(null);
 
     const read = async () => {
         const data = await fetch('./data/data.sem');
@@ -27,16 +28,27 @@ const LoadFileScreen = (props) => {
             console.log(alm);
         }, [alm])
 
-    const set  = () => {
+    const setSatellites = () => {
         if (!fileLoaded)
             ToastError("Load the file first!");
         else
-            setSats([...GetDOPService(false, alm)]);
+            setSats([...GetTopocentricCoordinatesService(false, alm)]);
+    }
+
+    const setDilution = () => {
+        if (!fileLoaded || sats === [])
+            ToastError("Load the file first!");
+        else
+            setDOP(GetDOPService(sats));
     }
 
     useEffect(() => {
         console.log(sats);
     }, [sats])
+
+    useEffect(() => {
+        console.log(DOP);
+    }, [DOP])
 
     return (
         <div>
@@ -45,8 +57,11 @@ const LoadFileScreen = (props) => {
                 <Button onClick={read}>
                     Odczytaj plik
                 </Button>
-                <Button onClick={set}>
-                    Oblicz
+                <Button onClick={setSatellites}>
+                    Oblicz parametry satelitów
+                </Button>
+                <Button onClick={setDilution}>
+                    Oblicz DOP
                 </Button>
             </PageWrapper>
         </ThemeProvider>
