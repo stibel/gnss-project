@@ -1,57 +1,59 @@
 import React, {useState, useEffect} from 'react';
 import {ToastContainer} from "react-toastify";
-import styled, {ThemeProvider} from "styled-components";
+import {ThemeProvider} from "styled-components";
 import sem from 'gps-sem-parser';
 
 import mainTheme from "../styles/main";
 import PageWrapper from "../styles/Page";
 import Button from "../styles/Button";
-import ToastError from "../services/SignalErrorService";
-import GetSatelliteECEFCoordinatesService from "../services/GetSatelliteECEFCoordinatesService";
+import Toast from "../services/SignalService";
 import GetTopocentricCoordinatesService from "../services/GetTopocentricCoordinatesService";
-
-export const ButtonWrapper = styled.div`
-  cursor: pointer;
-  -webkit-text-fill-color: red;
-`
+import GetDOPService from "../services/GetDOPService";
 
 const LoadFileScreen = (props) => {
 
     const [alm, setAlm] = useState();
     const [fileLoaded, setFileLoaded] = useState(false);
     const [sats, setSats] = useState([]);
-    const [areSet, setAreSet] = useState(false);
-    let satsTemp = [];
+    const [DOP, setDOP] = useState(null);
 
-    console.log(fileLoaded);
-    const read = () => {
-        fetch('./data/data.sem')
-            .then(res => {res.text()
-                .then(alm => setAlm(sem(alm)))
-                .then(fileLoaded => setFileLoaded(true));
-        });
+    const read = async () => {
+        const data = await fetch('./data/data.sem');
+        const text = await data.text();
+        setAlm(sem(text));
+        setFileLoaded(true);
+        Toast("File loaded!", 's');
     }
 
     useEffect(() => {
             console.log(alm);
         }, [alm])
 
-    const set  = () => {
-        if (!fileLoaded) {
-            ToastError("Load the file first!");
-        }
+    const setSatellites = () => {
+        if (!fileLoaded)
+            Toast("Load the file first!");
         else {
             setSats([...GetTopocentricCoordinatesService(false, alm)]);
+            Toast("Parameters calculated", 's');
+        }
+    }
+
+    const setDilution = () => {
+        if (!fileLoaded || !sats.length)
+            Toast("Load the file and calculate parametres first!");
+        else {
+            setDOP(GetDOPService(sats));
+            Toast("DOP calculated!", 's');
         }
     }
 
     useEffect(() => {
-        console.log(fileLoaded);
-    }, [fileLoaded])
-
-    useEffect(() => {
         console.log(sats);
     }, [sats])
+
+    useEffect(() => {
+        console.log(DOP);
+    }, [DOP])
 
     return (
         <div>
@@ -60,8 +62,11 @@ const LoadFileScreen = (props) => {
                 <Button onClick={read}>
                     Odczytaj plik
                 </Button>
-                <Button onClick={set}>
-                    test
+                <Button onClick={setSatellites}>
+                    Oblicz parametry satelitów
+                </Button>
+                <Button onClick={setDilution}>
+                    Oblicz DOP
                 </Button>
             </PageWrapper>
         </ThemeProvider>
