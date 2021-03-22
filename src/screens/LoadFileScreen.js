@@ -6,7 +6,7 @@ import sem from 'gps-sem-parser';
 import mainTheme from "../styles/main";
 import PageWrapper from "../styles/Page";
 import Button from "../styles/Button";
-import ToastError from "../services/SignalErrorService";
+import Toast from "../services/SignalService";
 import GetTopocentricCoordinatesService from "../services/GetTopocentricCoordinatesService";
 import GetDOPService from "../services/GetDOPService";
 
@@ -22,6 +22,7 @@ const LoadFileScreen = (props) => {
         const text = await data.text();
         setAlm(sem(text));
         setFileLoaded(true);
+        Toast("File loaded!", 's');
     }
 
     useEffect(() => {
@@ -30,16 +31,20 @@ const LoadFileScreen = (props) => {
 
     const setSatellites = () => {
         if (!fileLoaded)
-            ToastError("Load the file first!");
-        else
+            Toast("Load the file first!");
+        else {
             setSats([...GetTopocentricCoordinatesService(false, alm)]);
+            Toast("Parameters calculated", 's');
+        }
     }
 
     const setDilution = () => {
         if (!fileLoaded || !sats.length)
-            ToastError("Load the file first!");
-        else
+            Toast("Load the file and calculate parametres first!");
+        else {
             setDOP(GetDOPService(sats));
+            Toast("DOP calculated!", 's');
+        }
     }
 
     useEffect(() => {

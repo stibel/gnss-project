@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import mainTheme from "../styles/main";
 import PageWrapper from "../styles/Page";
 import Loading from "../components/Loading";
-import ToastError from "../services/SignalErrorService";
+import Toast from "../services/SignalService";
 
 const ContentWrapper = styled.div`
   padding: 0;
@@ -47,7 +47,7 @@ const HomeScreen = (props) => {
                 setApod(data);
                 setFetched(true);
             } else {
-                ToastError('Failed to fetch data from NASA API');
+                Toast('Failed to fetch data from NASA API');
                 setFetched(false);
             }
         } catch (err) {
@@ -75,7 +75,7 @@ const HomeScreen = (props) => {
                     <ContentWrapper>
                         <p style={{fontSize: mainTheme.fonts.size.m}}> {apod.date} <br/> {apod.title}</p>
                         {apod.media_type === "image" ?
-                            <ImageWrapper src={apod.url}/>
+                            <ImageWrapper src={apod.hasOwnProperty('hdurl') ? apod.hdurl : apod.url}/>
                             :
                             <VideoWrapper src={apod.url}/>
                         }
