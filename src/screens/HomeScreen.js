@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import styled, {ThemeProvider} from"styled-components";
+import styled from"styled-components";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -65,7 +65,6 @@ const HomeScreen = (props) => {
 
     return (
         <>
-        <ThemeProvider theme = {mainTheme}>
             <PageWrapper>
                 <ContentWrapper>
                     Mikołaj Siebielec
@@ -86,7 +85,6 @@ const HomeScreen = (props) => {
                 }
                 </ContentWrapper>
         </PageWrapper>
-        </ThemeProvider>
         <ToastContainer />
         </>
     )

@@ -1,9 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {ToastContainer} from "react-toastify";
-import {ThemeProvider} from "styled-components";
 import sem from 'gps-sem-parser';
 
-import mainTheme from "../styles/main";
 import PageWrapper from "../styles/Page";
 import Button from "../styles/Button";
 import Toast from "../services/SignalService";
@@ -56,22 +54,20 @@ const LoadFileScreen = (props) => {
     }, [DOP])
 
     return (
-        <div>
-            <ThemeProvider theme={mainTheme}>
-            <PageWrapper >
-                <Button onClick={read}>
-                    Odczytaj plik
-                </Button>
-                <Button onClick={setSatellites}>
-                    Oblicz parametry satelitów
-                </Button>
-                <Button onClick={setDilution}>
-                    Oblicz DOP
-                </Button>
-            </PageWrapper>
-        </ThemeProvider>
-            <ToastContainer />
-        </div>
+        <>
+        <PageWrapper >
+            <Button onClick={read}>
+                Odczytaj plik
+            </Button>
+            <Button onClick={setSatellites}>
+                Oblicz parametry satelitów
+            </Button>
+            <Button onClick={setDilution}>
+                Oblicz DOP
+            </Button>
+        </PageWrapper>
+        <ToastContainer />
+        </>
     )
 }
 
