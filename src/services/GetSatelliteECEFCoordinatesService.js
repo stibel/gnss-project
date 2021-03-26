@@ -13,8 +13,8 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
     //step one
 
-    const dayZero = new Date("January 6, 1980 00:00:00"),
-            day = new Date("March 1, 2021 00:00:00"),
+    const dayZero = new Date("1980-01-06 00:00:00"),
+            day = new Date("2021-03-01 00:00:00"),
             difference = day.getTime() - dayZero.getTime(); //difference between dates in miliseconds
 
     const msInWeek = 604800000;

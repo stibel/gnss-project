@@ -8,7 +8,7 @@ import Toast from "../services/SignalService";
 import GetTopocentricCoordinatesService from "../services/GetTopocentricCoordinatesService";
 import GetDOPService from "../services/GetDOPService";
 
-const LoadFileScreen = (props) => {
+const LoadFileScreen = props => {
 
     const [alm, setAlm] = useState();
     const [fileLoaded, setFileLoaded] = useState(false);
@@ -38,7 +38,7 @@ const LoadFileScreen = (props) => {
 
     const setDilution = () => {
         if (!fileLoaded || !sats.length)
-            Toast("Load the file and calculate parametres first!");
+            Toast("Load the file and calculate parameters first!");
         else {
             setDOP(GetDOPService(sats));
             Toast("DOP calculated!", 's');
@@ -55,7 +55,7 @@ const LoadFileScreen = (props) => {
 
     return (
         <>
-        <PageWrapper >
+        <PageWrapper>
             <Button onClick={read}>
                 Odczytaj plik
             </Button>
