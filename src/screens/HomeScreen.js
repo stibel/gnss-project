@@ -36,7 +36,7 @@ const VideoWrapper = styled.video`
 
 const HomeScreen = props => {
 
-    const [apod, setApod] = useState(null);
+    const [apod, setApod] = useState({});
     const [fetched, setFetched] = useState(false);
 
     const getAPOD = async () => {

@@ -1,12 +1,23 @@
 import React, {useState, useEffect} from 'react';
 import {ToastContainer} from "react-toastify";
 import sem from 'gps-sem-parser';
+import styled from "styled-components";
 
 import PageWrapper from "../styles/Page";
 import Button from "../styles/Button";
 import Toast from "../services/SignalService";
 import GetTopocentricCoordinatesService from "../services/GetTopocentricCoordinatesService";
 import GetDOPService from "../services/GetDOPService";
+
+const ButtonsWrapper = styled.main`
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 25%);
+  justify-items: center;
+  align-items: center;
+  align-self: center;
+  place-items: center;
+`
 
 const LoadFileScreen = props => {
 
@@ -29,7 +40,7 @@ const LoadFileScreen = props => {
 
     const setSatellites = () => {
         if (!fileLoaded)
-            Toast("Load the file first!");
+            Toast("Load the file first!", 'w');
         else {
             setSats([...GetTopocentricCoordinatesService(false, alm)]);
             Toast("Parameters calculated", 's');
@@ -38,7 +49,7 @@ const LoadFileScreen = props => {
 
     const setDilution = () => {
         if (!fileLoaded || !sats.length)
-            Toast("Load the file and calculate parameters first!");
+            Toast("Load the file and calculate parameters first!", 'w');
         else {
             setDOP(GetDOPService(sats));
             Toast("DOP calculated!", 's');
@@ -56,15 +67,20 @@ const LoadFileScreen = props => {
     return (
         <>
         <PageWrapper>
-            <Button onClick={read}>
-                Odczytaj plik
-            </Button>
-            <Button onClick={setSatellites}>
-                Oblicz parametry satelitów
-            </Button>
-            <Button onClick={setDilution}>
-                Oblicz DOP
-            </Button>
+            <ButtonsWrapper>
+                <Button onClick={read}>
+                    Odczytaj plik
+                </Button>
+                <Button onClick={setSatellites}>
+                    Oblicz parametry satelitów
+                </Button>
+                <Button onClick={setDilution}>
+                    Oblicz DOP
+                </Button>
+                <Button style={{opacity: "75%"}} onClick={() => Toast("Under construction")}>
+                    Narysuj wykresy
+                </Button>
+            </ButtonsWrapper>
         </PageWrapper>
         <ToastContainer />
         </>

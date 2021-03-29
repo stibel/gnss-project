@@ -5,7 +5,6 @@ const PageWrapper = styled.main`
   margin: 0;
   display: flex;
   flex-flow: row;
-  justify-content: left;
   width: 100vw;
   height: 90vh;
   background-image: linear-gradient(180deg, ${props => props.theme.colours.primary}, ${props => props.theme.colours.details});
