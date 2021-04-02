@@ -33,9 +33,8 @@ const GetDOPService = (satellites) => {
 
     let deltaPs = [];
 
-    for (const idx in satellites) {
+    for (const s of satellites) {
 
-        const s = satellites[idx];
         const xs = s.ECEFcoords[0], ys = s.ECEFcoords[1], zs = s.ECEFcoords[2], ro = s.ro;
 
         const deltaP = math.matrix([-(xs - X) / ro, -(ys - Y) / ro, -(zs - Z) / ro,  1]);

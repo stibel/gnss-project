@@ -38,11 +38,9 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
 
     let satellitesArray = []; //array of satellites to be returned
 
-    for (const idx in satArray) {
+    for (const sat of satArray) {
 
         let satellite = {}; //object containing only id and ECEF coordinates
-
-        const sat = satArray[idx];
 
         //step two
 

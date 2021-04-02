@@ -42,8 +42,7 @@ const GetTopocentricCoordinatesService = (receiver, almanach, observationMask = 
         ]
     )
 
-    for (const idx in satellites) {
-        let s = satellites[idx];
+    for (const s of satellites) {
 
         const Xsr = [s.ECEFcoords[0] - X, s.ECEFcoords[1] - Y, s.ECEFcoords[2] - Z];
 
