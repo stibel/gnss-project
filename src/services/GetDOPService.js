@@ -1,10 +1,9 @@
 import * as math from 'mathjs'
 import {degToRad} from "./GetSatelliteECEFCoordinatesService";
 
-const GetDOPService = (satellites) => {
+const GetDOPService = (satellites, receiver) => {
 
-    //receiver coordinates, hardcoded for testing
-    const phi = degToRad(52), lambda = degToRad(21), h = 100;
+    const phi = degToRad(receiver.phi), lambda = degToRad(receiver.lambda), h = receiver.h;
 
     const a = 6378137;
     const eSquared = 0.00669438002290;
