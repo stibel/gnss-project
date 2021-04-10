@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 const Input = styled.input`
-  
+    font-family: ${props => props.theme.fonts.family};
     -webkit-text-fill-color: ${props => props.theme.colours.primary};
     background-color:  ${props => props.theme.colours.secondary};
     border: 1px solid ${props => props.theme.colours.details};

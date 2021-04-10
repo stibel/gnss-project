@@ -3,14 +3,14 @@ import * as math from 'mathjs';
 import GetSatelliteECEFCoordinatesService from "./GetSatelliteECEFCoordinatesService";
 import {degToRad} from "./GetSatelliteECEFCoordinatesService";
 
-const GetTopocentricCoordinatesService = (receiver, almanach, observationMask = 0) => {
+const GetTopocentricCoordinatesService = (receiver, almanach) => {
 
     const satellites = GetSatelliteECEFCoordinatesService(almanach);
 
     let X, Y, Z; //receiver coordinates
 
     //hardcoded values for testing
-    const phi = degToRad(52), lambda = degToRad(21), h = 100;
+    const phi = degToRad(receiver.phi), lambda = degToRad(receiver.lambda), h = receiver.h, observationMask = receiver.mask;
 
     const a = 6378137;
     const eSquared = 0.00669438002290;

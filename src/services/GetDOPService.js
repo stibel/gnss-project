@@ -73,7 +73,7 @@ const GetDOPService = (satellites, receiver) => {
 
     // console.log("H " + HDOP + " V " + VDOP);
 
-    const PDOPneu = Math.sqrt(mainDiagQneu.subset(math.index(0)) + mainDiagQneu.subset(math.index(1)) + mainDiagQneu.subset(math.index(2)));
+    //const PDOPneu = Math.sqrt(mainDiagQneu.subset(math.index(0)) + mainDiagQneu.subset(math.index(1)) + mainDiagQneu.subset(math.index(2)));
 
     // console.log("P " + PDOP);
     // console.log("Pneu " + PDOPneu);
