@@ -12,11 +12,25 @@ import GetTopocentricCoordinatesService from "../services/GetTopocentricCoordina
 import GetDOPService from "../services/GetDOPService";
 
 const InputWrapper = styled.div`
-    display: flex;
-    flex-flow: column;
-    text-align: center;
-    font-family: ${props => props.theme.fonts.family};
-    padding: 10%;
+  display: flex;
+  flex-flow: column;
+  text-align: center;
+  justify-content: space-evenly;
+  margin: 2% 0 0 2%;
+  height: 10vh;
+  font-family: ${props => props.theme.fonts.family};
+  background-color: #1D1135;
+  padding: 7%;
+  align-items: center;
+  border-radius: 5%;
+  filter: drop-shadow(0 0 1vh ${props => props.theme.colours.detailsTwo});
+`
+
+const Label = styled.div`
+  display: flex;
+  flex-flow: row;
+  font-size: ${props => props.theme.fonts.size.m};
+  height: ${props => props.theme.fonts.size.m};
 `
 
 const ButtonsWrapper = styled.main`
@@ -55,17 +69,17 @@ const LoadFileScreen = props => {
         }
     }, [alm])
 
-    // useEffect(() => {
-    //     console.log(sats);
-    // }, [sats])
-    //
-    // useEffect(() => {
-    //     console.log(DOP);
-    // }, [DOP])
-    //
-    // useEffect(() => {
-    //     console.log(receiver);
-    // }, [receiver])
+    useEffect(() => {
+        console.log(sats);
+    }, [sats])
+
+    useEffect(() => {
+        console.log(DOP);
+    }, [DOP])
+
+    useEffect(() => {
+        console.log(receiver);
+    }, [receiver])
 
     const getClosestTime = provided => {
         const arr = [61440, 147456, 233472, 319488, 405504, 503808, 589824];
@@ -92,13 +106,16 @@ const LoadFileScreen = props => {
         if (isNaN(phi.current.value) || phi.current.value === ''||  isNaN(lambda.current.value) || lambda.current.value === '' || isNaN(h.current.value) || h.current.value === '' || isNaN(observationMask.current.value) || observationMask.current.value === '' || observationMask.current.value < 0)
             Toast('Provide correct receiver coordinates and observation mask!', 'w')
         else {
+            h.current.value = h.current.value < 0 ? 0 : h.current.value
+            phi.current.value = phi.current.value % 90
+            lambda.current.value = lambda.current.value % 180
             setReceiver({
                 phi: phi.current.value,
-                lambda: lambda.current.value,
+                lambda: lambda.current.value % 180,
                 h: h.current.value,
                 mask: observationMask.current.value
             });
-            Toast(`Receiver set: (${receiver.phi}, ${receiver.lambda}, ${receiver.h}), mask: ${receiver.mask}`, 's');
+                Toast(`Receiver set: (${phi.current.value}, ${lambda.current.value}, ${h.current.value}), mask: ${observationMask.current.value}`, 's');
         }
 
     }
@@ -123,7 +140,7 @@ const LoadFileScreen = props => {
             setAlm(sem(data));
         } catch (e) {
             console.error(e)
-            Toast('Unable to set almanach. Please note that some weeks have less than 6 ToAs.', 'e');
+            Toast('Unable to set almanach. Currently only working on almanachs from 2021.', 'e');
         }
     }
 
@@ -149,12 +166,17 @@ const LoadFileScreen = props => {
         <>
         <PageWrapper>
             <InputWrapper>
-                <div>Tydzień GPS</div>
-                <Input ref={week}/>
-                <div>ToA</div>
-                <Input ref={toa} list={"toa"}/>
+                    Almanach
+                <Label>
+                    <div style={{width: '10vw'}}>Tydzień&nbsp;GPS</div>
+                    <Input ref={week}/>
+                </Label>
+                <Label>
+                    <div style={{width: '10vw'}}>ToA</div>
+                    <Input ref={toa} list={"toa"}/>
+                </Label>
                 <datalist id="toa">
-                    <option value="061440"/>
+                    <option value="61440"/>
                     <option value="147456"/>
                     <option value="233472"/>
                     <option value="319488"/>
@@ -162,14 +184,34 @@ const LoadFileScreen = props => {
                     <option value="503808"/>
                     <option value="589824"/>
                 </datalist>
-                <Button onClick={read}>Wczytaj wybrany almanach</Button>
+                <div>
+                    <Button onClick={read}>Wczytaj wybrany almanach</Button>
+                </div>
             </InputWrapper>
             <InputWrapper>
-                <Input ref={phi} />
-                <Input ref={lambda} />
-                <Input ref={h} />
-                <Input ref={observationMask} />
-                <Button onClick={handleReceiverInput} />
+                Odbiornik
+                <Label>
+                    <div style={{width: '15vw'}}>phi</div>
+                    <Input ref={phi} />
+                </Label>
+                <Label>
+                    <div style={{width: '15vw'}}>lambda</div>
+                    <Input ref={lambda} />
+                </Label>
+                <Label>
+                    <div style={{width: '15vw'}}>h</div>
+                    <Input ref={h} />
+                </Label>
+                <Label>
+                    <div style={{width: '15vw'}}>Maska&nbsp;obserwacji</div>
+                    <Input ref={observationMask} />
+                </Label>
+                <div>
+                    <Button onClick={handleReceiverInput}>Ustaw pozycję odbiornika</Button>
+                </div>
+            </InputWrapper>
+            <InputWrapper>
+                Parametry
             </InputWrapper>
             <ButtonsWrapper>
                 {/*<Button onClick={read}>*/}
@@ -181,9 +223,9 @@ const LoadFileScreen = props => {
                 <Button onClick={setDilution}>
                     Oblicz DOP
                 </Button>
-                <Button style={{opacity: "75%", cursor: "not-allowed"}} onClick={() => Toast("Under construction")}>
-                    Narysuj wykresy
-                </Button>
+                {/*<Button style={{opacity: "75%", cursor: "not-allowed"}} onClick={() => Toast("Under construction")}>*/}
+                {/*    Narysuj wykresy*/}
+                {/*</Button>*/}
             </ButtonsWrapper>
         </PageWrapper>
         <ToastContainer />

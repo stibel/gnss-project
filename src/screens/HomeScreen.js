@@ -27,7 +27,7 @@ const ImageWrapper = styled.img`
   filter: drop-shadow(0 0 1vh ${props => props.theme.colours.detailsTwo});
 `
 
-const VideoWrapper = styled.video`
+const VideoWrapper = styled.iframe`
   height: 70%;
   width: auto;
   border-radius: 5%;
