@@ -10,6 +10,8 @@ import Input from "../styles/Input";
 import Toast from "../services/SignalService";
 import GetTopocentricCoordinatesService from "../services/GetTopocentricCoordinatesService";
 import GetDOPService from "../services/GetDOPService";
+import {Switch, Route, useRouteMatch, useHistory} from 'react-router-dom'
+import ChartsScreen from "./ChartsScreen";
 
 const InputWrapper = styled.div`
   display: flex;
@@ -45,6 +47,7 @@ const ButtonsWrapper = styled.main`
 
 const LoadFileScreen = props => {
 
+    const {path, url} = useRouteMatch()
     const [alm, setAlm] = useState(null);
     const [sats, setSats] = useState([]);
     const [DOP, setDOP] = useState(null);
@@ -55,6 +58,8 @@ const LoadFileScreen = props => {
     const lambda = useRef(null);
     const h = useRef(null);
     const observationMask = useRef(null);
+    const [chartsData, setChartsData] = useState(null)
+    const history = useHistory()
 
     useEffect(() => {
         axios.get('https://cors.bridged.cc/https://www.navcen.uscg.gov/?pageName=currentAlmanac&format=sem-txt')
@@ -99,7 +104,6 @@ const LoadFileScreen = props => {
             toa.current.value = getClosestTime(toa.current.value);
             Toast(`Week set to ${week.current.value}, ToA set to ${toa.current.value}`, 's');
         }
-
     }
 
     const handleReceiverInput = () => {
@@ -115,7 +119,7 @@ const LoadFileScreen = props => {
                 h: h.current.value,
                 mask: observationMask.current.value
             });
-                Toast(`Receiver set: (${phi.current.value}, ${lambda.current.value}, ${h.current.value}), mask: ${observationMask.current.value}`, 's');
+            Toast(`Receiver set: (${phi.current.value}, ${lambda.current.value}, ${h.current.value}), mask: ${observationMask.current.value}`, 's');
         }
 
     }
@@ -162,74 +166,107 @@ const LoadFileScreen = props => {
         }
     }
 
+    const createChartsData = () => {
+        //Do all calculations for a whole day
+        //then set chartsData to calculated data
+        //and go to ChartsScreen
+
+        const data = []
+
+        for(let i of Array(1000))
+            data.push({
+                d: ["DOPS"],
+                t: "time",
+                s: ["sats"]
+            })
+
+        setChartsData(data)
+        history.push(`${path}/Charts`)
+    }
+
+    useEffect(() => {
+        if(chartsData) {
+            Toast("Charts data set", 's')
+        }
+    }, [chartsData])
+
     return (
-        <>
-        <PageWrapper>
-            <InputWrapper>
-                    Almanach
-                <Label>
-                    <div style={{width: '10vw'}}>Tydzień&nbsp;GPS</div>
-                    <Input ref={week}/>
-                </Label>
-                <Label>
-                    <div style={{width: '10vw'}}>ToA</div>
-                    <Input ref={toa} list={"toa"}/>
-                </Label>
-                <datalist id="toa">
-                    <option value="61440"/>
-                    <option value="147456"/>
-                    <option value="233472"/>
-                    <option value="319488"/>
-                    <option value="405504"/>
-                    <option value="503808"/>
-                    <option value="589824"/>
-                </datalist>
-                <div>
-                    <Button onClick={read}>Wczytaj wybrany almanach</Button>
-                </div>
-            </InputWrapper>
-            <InputWrapper>
-                Odbiornik
-                <Label>
-                    <div style={{width: '15vw'}}>phi</div>
-                    <Input ref={phi} />
-                </Label>
-                <Label>
-                    <div style={{width: '15vw'}}>lambda</div>
-                    <Input ref={lambda} />
-                </Label>
-                <Label>
-                    <div style={{width: '15vw'}}>h</div>
-                    <Input ref={h} />
-                </Label>
-                <Label>
-                    <div style={{width: '15vw'}}>Maska&nbsp;obserwacji</div>
-                    <Input ref={observationMask} />
-                </Label>
-                <div>
-                    <Button onClick={handleReceiverInput}>Ustaw pozycję odbiornika</Button>
-                </div>
-            </InputWrapper>
-            <InputWrapper>
-                Parametry
-            </InputWrapper>
-            <ButtonsWrapper>
-                {/*<Button onClick={read}>*/}
-                {/*    Odczytaj plik*/}
-                {/*</Button>*/}
-                <Button onClick={setSatellites}>
-                    Oblicz parametry satelitów
-                </Button>
-                <Button onClick={setDilution}>
-                    Oblicz DOP
-                </Button>
-                {/*<Button style={{opacity: "75%", cursor: "not-allowed"}} onClick={() => Toast("Under construction")}>*/}
-                {/*    Narysuj wykresy*/}
-                {/*</Button>*/}
-            </ButtonsWrapper>
-        </PageWrapper>
-        <ToastContainer />
-        </>
+        <Switch>
+            <Route exact path={path}>
+
+                <PageWrapper>
+                    <InputWrapper>
+                        Almanach
+                        <Label>
+                            <div style={{width: '10vw'}}>Tydzień&nbsp;GPS</div>
+                            <Input ref={week}/>
+                        </Label>
+                        <Label>
+                            <div style={{width: '10vw'}}>ToA</div>
+                            <Input ref={toa} list={"toa"}/>
+                        </Label>
+                        <datalist id="toa">
+                            <option value="61440"/>
+                            <option value="147456"/>
+                            <option value="233472"/>
+                            <option value="319488"/>
+                            <option value="405504"/>
+                            <option value="503808"/>
+                            <option value="589824"/>
+                        </datalist>
+                        <div>
+                            <Button onClick={read}>Wczytaj wybrany almanach</Button>
+                        </div>
+                    </InputWrapper>
+                    <InputWrapper>
+                        Odbiornik
+                        <Label>
+                            <div style={{width: '15vw'}}>phi</div>
+                            <Input ref={phi} />
+                        </Label>
+                        <Label>
+                            <div style={{width: '15vw'}}>lambda</div>
+                            <Input ref={lambda} />
+                        </Label>
+                        <Label>
+                            <div style={{width: '15vw'}}>h</div>
+                            <Input ref={h} />
+                        </Label>
+                        <Label>
+                            <div style={{width: '15vw'}}>Maska&nbsp;obserwacji</div>
+                            <Input ref={observationMask} />
+                        </Label>
+                        <div>
+                            <Button onClick={handleReceiverInput}>Ustaw pozycję odbiornika</Button>
+                        </div>
+                    </InputWrapper>
+                    <InputWrapper>
+                        Parametry
+                    <ButtonsWrapper>
+                        {/*<Button onClick={read}>*/}
+                        {/*    Odczytaj plik*/}
+                        {/*</Button>*/}
+                        {/*<Button onClick={setSatellites}>*/}
+                        {/*    Oblicz parametry satelitów*/}
+                        {/*</Button>*/}
+                        {/*<Button onClick={setDilution}>*/}
+                        {/*    Oblicz DOP*/}
+                        {/*</Button>*/}
+
+                        {/*Calculate all shit*/}
+                        <Button onClick={createChartsData}>
+                            Narysuj wykresy
+                        </Button>
+                    </ButtonsWrapper>
+                    </InputWrapper>
+                </PageWrapper>
+                <ToastContainer />
+            </Route>
+            {/*Show data in pretty way*/}
+            <Route exact path={`${path}/Charts`}>
+                <ChartsScreen data={chartsData} />
+            </Route>
+        </Switch>
     )
 }
 
