@@ -7,14 +7,13 @@ const degToRad = (degrees) => {
     return (degs.times(pi.div(180))).toNumber();
 }
 
-const GetSatelliteECEFCoordinatesService = (almanach) => {
+const GetSatelliteECEFCoordinatesService = (almanac, day) => {
 
-    const satellites = almanach.satellites;
+    const satellites = almanac.satellites;
 
     //step one
 
     const dayZero = new Date("1980-01-06 00:00:00"),
-            day = new Date("2021-03-01 00:00:00"),
             difference = day.getTime() - dayZero.getTime(); //difference between dates in miliseconds
 
     const msInWeek = 604800000;
@@ -30,7 +29,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
     const seconds = diff2ms / 1000; //seconds left after substracting full weeks
 
     const t = (week * 604800) + seconds;
-    const toa = almanach.toa + ((almanach.gpsWeek - 2048) * 604800);
+    const toa = almanac.toa + ((almanac.gpsWeek - 2048) * 604800);
     const tk = new Decimal(t - toa);
 
     const my = new Decimal(3.986004415 * Math.pow(10, 14))
@@ -85,7 +84,7 @@ const GetSatelliteECEFCoordinatesService = (almanach) => {
         const rateOfRightAscension = new Decimal(s.rightAscensionDot);
         const rightAscension = new Decimal(s.rightAscension);
 
-        const bigOmegak = rightAscension.plus(tk.times(rateOfRightAscension.minus(omega))).minus(omega.times(almanach.toa));
+        const bigOmegak = rightAscension.plus(tk.times(rateOfRightAscension.minus(omega))).minus(omega.times(almanac.toa));
         //step ten
 
         const orbitalInclination = new Decimal(s.inclination);

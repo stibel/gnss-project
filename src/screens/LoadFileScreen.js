@@ -1,15 +1,21 @@
 import React, {useEffect, useRef, useState} from 'react';
+import {Switch, Route, useHistory} from "react-router-dom";
 import {ToastContainer} from "react-toastify";
 import sem from 'gps-sem-parser';
 import axios from "axios";
 import styled from "styled-components";
+import DatePicker from "react-date-picker";
+import {add, differenceInMinutes, sub} from "date-fns";
 
 import PageWrapper from "../styles/Page";
-import Button from "../styles/Button";
+import Button from "../components/Button";
+import ButtonRect from "../styles/ButtonRect";
 import Input from "../styles/Input";
 import Toast from "../services/SignalService";
 import GetTopocentricCoordinatesService from "../services/GetTopocentricCoordinatesService";
 import GetDOPService from "../services/GetDOPService";
+import mainTheme from "../styles/main";
+import ChartsScreen from "./ChartsScreen";
 
 const InputWrapper = styled.div`
   display: flex;
@@ -17,8 +23,10 @@ const InputWrapper = styled.div`
   text-align: center;
   justify-content: space-evenly;
   margin: 2% 0 0 2%;
-  height: 10vh;
+  height: auto;
+  width: 30vw;
   font-family: ${props => props.theme.fonts.family};
+  font-size: ${props => props.theme.fonts.size.s};
   background-color: #1D1135;
   padding: 7%;
   align-items: center;
@@ -30,10 +38,11 @@ const Label = styled.div`
   display: flex;
   flex-flow: row;
   font-size: ${props => props.theme.fonts.size.m};
-  height: ${props => props.theme.fonts.size.m};
+  height: ${props => props.theme.fonts.size.l};
 `
 
-const ButtonsWrapper = styled.main`
+const ButtonWrapper = styled.main`
+  padding: 20% 20% 20% 30%;
   width: 100%;
   display: flex;
   flex-flow: row;
@@ -44,13 +53,15 @@ const ButtonsWrapper = styled.main`
 `
 
 const LoadFileScreen = props => {
-
+    const history = useHistory();
     const [alm, setAlm] = useState(null);
-    const [sats, setSats] = useState([]);
-    const [DOP, setDOP] = useState(null);
+    const [chartsData, setChartsData] = useState(null);
     const [receiver, setReceiver] = useState(null);
+    const [date, setDate] = useState(new Date());
+    // const [counting, setCounting] = useState(false);
     const week = useRef(null);
     const toa = useRef(null);
+    const year = useRef(null);
     const phi = useRef(null);
     const lambda = useRef(null);
     const h = useRef(null);
@@ -60,22 +71,23 @@ const LoadFileScreen = props => {
         axios.get('https://cors.bridged.cc/https://www.navcen.uscg.gov/?pageName=currentAlmanac&format=sem-txt')
             .then(res => setAlm(sem(res.data)))
             .catch(err => console.error(err));
+
+        const day = new Date();
+        year.current.value = day.getFullYear();
     }, [])
 
     useEffect(() => {
         if(alm) {
             Toast(`Almanach set! Week: ${alm.gpsWeek}, ToA: ${alm.toa}`)
             console.log(alm);
+            week.current.value = alm.gpsWeek;
+            toa.current.value = alm.toa;
         }
     }, [alm])
 
     useEffect(() => {
-        console.log(sats);
-    }, [sats])
-
-    useEffect(() => {
-        console.log(DOP);
-    }, [DOP])
+        console.log(chartsData);
+    }, [chartsData])
 
     useEffect(() => {
         console.log(receiver);
@@ -90,8 +102,8 @@ const LoadFileScreen = props => {
     }
 
     const handleTimeInput = () => {
-        if (isNaN(week.current.value) || week.current.value === '' || week.current.value < 0)
-            Toast('Provide correct week value!', 'w')
+        if (isNaN(week.current.value) || week.current.value === '' || week.current.value < 0 || isNaN(toa.current.value) || toa.current.value === '')
+            Toast('Provide correct week and ToA value!', 'w')
         else {
             //what follows solves the problem of only constant times at which almanac is provided, in case the user provides
             //a week greater than 1023 or wrong toa values closest to those will be chosen
@@ -103,7 +115,7 @@ const LoadFileScreen = props => {
     }
 
     const handleReceiverInput = () => {
-        if (isNaN(phi.current.value) || phi.current.value === ''||  isNaN(lambda.current.value) || lambda.current.value === '' || isNaN(h.current.value) || h.current.value === '' || isNaN(observationMask.current.value) || observationMask.current.value === '' || observationMask.current.value < 0)
+        if (isNaN(phi.current.value) || phi.current.value === ''||  isNaN(lambda.current.value) || lambda.current.value === '' || isNaN(h.current.value) || h.current.value === '')
             Toast('Provide correct receiver coordinates and observation mask!', 'w')
         else {
             h.current.value = h.current.value < 0 ? 0 : h.current.value
@@ -111,11 +123,10 @@ const LoadFileScreen = props => {
             lambda.current.value = lambda.current.value % 180
             setReceiver({
                 phi: phi.current.value,
-                lambda: lambda.current.value % 180,
-                h: h.current.value,
-                mask: observationMask.current.value
+                lambda: lambda.current.value,
+                h: h.current.value
             });
-                Toast(`Receiver set: (${phi.current.value}, ${lambda.current.value}, ${h.current.value}), mask: ${observationMask.current.value}`, 's');
+            Toast(`Receiver set: (${phi.current.value}, ${lambda.current.value}, ${h.current.value})`, 's');
         }
 
     }
@@ -126,13 +137,14 @@ const LoadFileScreen = props => {
             Toast('Provide GPS week and ToA!', 'e');
         let t = toa.current.value.toString();
         let w = week.current.value.toString();
+        const y = year.current.value.toString();
         if (t.length === 5)
             t = '0' + t;
         if (w.length < 4)
             w.length < 3 ? w = '00' + w : w = '0' + w;
 
-        const url = `https://cors.bridged.cc/https://celestrak.com/GPS/almanac/SEM/2021/almanac.sem.week${w}.${t}.txt`;
-        console.log(url);
+        const url = `https://cors.bridged.cc/https://celestrak.com/GPS/almanac/SEM/${y}/almanac.sem.week${w}.${t}.txt`;
+        // console.log(url);
         let data
         await axios.get(url).then(res => data = res.data).catch(err => console.error(err))
 
@@ -144,92 +156,110 @@ const LoadFileScreen = props => {
         }
     }
 
-    const setSatellites = () => {
-        if (!alm || !receiver)
+    const count = async () => {
+        if (!alm || !receiver) {
             Toast("Set almanach and provide receiver coordinates!", 'w');
-        else {
-            setSats([...GetTopocentricCoordinatesService(receiver, alm, observationMask)]);
-            Toast("Parameters calculated", 's');
+            return
         }
+        let data = [];
+        const startTime = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        let time = new Date(startTime);
+        const mask = observationMask.current.value < 0 ? 0 : observationMask.current.value;
+        // while (differenceInMinutes(time, startTime) < 24 *  60 + 1) {
+            const sats = GetTopocentricCoordinatesService(receiver, alm, time);
+            console.log(sats)
+            const DOPs = GetDOPService(sats, receiver);
+            console.log(DOPs)
+            const visibleSats = sats.filter((item) => item.el > mask);
+            data.push({t: time, s: sats, v: visibleSats.length, d: DOPs});
+            console.log(data);
+            // time = add(time, {minutes: 10});
+        // }
+        // setChartsData([...data]);
     }
 
-    const setDilution = () => {
-        if (!alm || !sats.length || !receiver)
-            Toast("Calculate parameters first!", 'w');
-        else {
-            setDOP(GetDOPService(sats, receiver));
-            Toast("DOP calculated!", 's');
-        }
-    }
+    useEffect(() => {
+        if(chartsData)
+            history.push('/Load/Charts')
+    }, [chartsData]);
 
     return (
-        <>
-        <PageWrapper>
-            <InputWrapper>
-                    Almanach
-                <Label>
-                    <div style={{width: '10vw'}}>Tydzień&nbsp;GPS</div>
-                    <Input ref={week}/>
-                </Label>
-                <Label>
-                    <div style={{width: '10vw'}}>ToA</div>
-                    <Input ref={toa} list={"toa"}/>
-                </Label>
-                <datalist id="toa">
-                    <option value="61440"/>
-                    <option value="147456"/>
-                    <option value="233472"/>
-                    <option value="319488"/>
-                    <option value="405504"/>
-                    <option value="503808"/>
-                    <option value="589824"/>
-                </datalist>
-                <div>
-                    <Button onClick={read}>Wczytaj wybrany almanach</Button>
-                </div>
-            </InputWrapper>
-            <InputWrapper>
-                Odbiornik
-                <Label>
-                    <div style={{width: '15vw'}}>phi</div>
-                    <Input ref={phi} />
-                </Label>
-                <Label>
-                    <div style={{width: '15vw'}}>lambda</div>
-                    <Input ref={lambda} />
-                </Label>
-                <Label>
-                    <div style={{width: '15vw'}}>h</div>
-                    <Input ref={h} />
-                </Label>
-                <Label>
-                    <div style={{width: '15vw'}}>Maska&nbsp;obserwacji</div>
-                    <Input ref={observationMask} />
-                </Label>
-                <div>
-                    <Button onClick={handleReceiverInput}>Ustaw pozycję odbiornika</Button>
-                </div>
-            </InputWrapper>
-            <InputWrapper>
-                Parametry
-            </InputWrapper>
-            <ButtonsWrapper>
-                {/*<Button onClick={read}>*/}
-                {/*    Odczytaj plik*/}
-                {/*</Button>*/}
-                <Button onClick={setSatellites}>
-                    Oblicz parametry satelitów
-                </Button>
-                <Button onClick={setDilution}>
-                    Oblicz DOP
-                </Button>
-                {/*<Button style={{opacity: "75%", cursor: "not-allowed"}} onClick={() => Toast("Under construction")}>*/}
-                {/*    Narysuj wykresy*/}
-                {/*</Button>*/}
-            </ButtonsWrapper>
-        </PageWrapper>
-        <ToastContainer />
-        </>
+        <Switch>
+            <Route exact path={"/Load"}>
+            <PageWrapper>
+                <div style={{flexFlow: 'column', height: '90vh'}}>
+                    <InputWrapper>
+                        <div style={{fontSize: mainTheme.fonts.size.l}}>
+                            Almanach
+                        </div>
+                        <Label>
+                            <div style={{width: '10vw'}}>Tydzień&nbsp;GPS</div>
+                            <Input ref={week}/>
+                        </Label>
+                        <Label>
+                            <div style={{width: '10vw'}}>ToA</div>
+                            <Input ref={toa} list={"toa"}/>
+                        </Label>
+                        <Label>
+                            <div style={{width: '10vw'}}>Rok</div>
+                            <Input ref={year}/>
+                        </Label>
+                        <datalist id="toa">
+                            <option value="61440"/>
+                            <option value="147456"/>
+                            <option value="233472"/>
+                            <option value="319488"/>
+                            <option value="405504"/>
+                            <option value="503808"/>
+                            <option value="589824"/>
+                        </datalist>
+                        <div>
+                            <ButtonRect onClick={read}>Wczytaj almanach</ButtonRect>
+                        </div>
+                    </InputWrapper>
+                    <InputWrapper>
+                        <div style={{fontSize: mainTheme.fonts.size.l}}>
+                            Odbiornik
+                        </div>
+                        <Label>
+                            <div style={{width: '15vw'}}>Phi</div>
+                            <Input ref={phi}/>
+                        </Label>
+                        <Label>
+                            <div style={{width: '15vw'}}>Lambda</div>
+                            <Input ref={lambda}/>
+                        </Label>
+                        <Label>
+                            <div style={{width: '15vw'}}>H</div>
+                            <Input ref={h}/>
+                        </Label>
+                        <Label>
+                            <div style={{width: '15vw'}}>Maska&nbsp;obserwacji</div>
+                            <Input ref={observationMask}/>
+                        </Label>
+                            <ButtonRect onClick={handleReceiverInput}>Ustaw pozycję odbiornika</ButtonRect>
+                            <div style={{fontSize: mainTheme.fonts.size.l}}>
+                                Data
+                            </div>
+                            <div style={{backgroundColor: mainTheme.colours.details}}>
+                                <DatePicker value={date} onChange={setDate} required={true} showLeadingZeros={true}
+                                            minDate={sub(new Date(), {months: 3})}
+                                            maxDate={add(new Date(), {months: 3})}/>
+                            </div>
+                        </InputWrapper>
+                    </div>
+                    <ButtonWrapper>
+                        <Button onClick={count}>
+                            Oblicz
+                        </Button>
+                    </ButtonWrapper>
+            </PageWrapper>
+            <ToastContainer />
+            </Route>
+            <Route path={'/Load/Charts'}>
+                <ChartsScreen data={chartsData} />
+            </Route>
+        </Switch>
     )
 }
 

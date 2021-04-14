@@ -3,14 +3,14 @@ import * as math from 'mathjs';
 import GetSatelliteECEFCoordinatesService from "./GetSatelliteECEFCoordinatesService";
 import {degToRad} from "./GetSatelliteECEFCoordinatesService";
 
-const GetTopocentricCoordinatesService = (receiver, almanach) => {
+const GetTopocentricCoordinatesService = (receiver, almanac, day) => {
 
-    const satellites = GetSatelliteECEFCoordinatesService(almanach);
+    const satellites = GetSatelliteECEFCoordinatesService(almanac, day);
 
     let X, Y, Z; //receiver coordinates
 
     //hardcoded values for testing
-    const phi = degToRad(receiver.phi), lambda = degToRad(receiver.lambda), h = receiver.h, observationMask = receiver.mask;
+    const phi = degToRad(receiver.phi), lambda = degToRad(receiver.lambda), h = receiver.h;
 
     const a = 6378137;
     const eSquared = 0.00669438002290;
@@ -59,8 +59,7 @@ const GetTopocentricCoordinatesService = (receiver, almanach) => {
         s.el = Math.asin(u / Math.sqrt(Math.pow(n, 2) + Math.pow(e, 2) + Math.pow(u, 2))) * 180 / Math.PI;
         s.ro = math.norm(Xsr);
 
-        if (s.el > observationMask)
-            satellitesArray.push(s);
+        satellitesArray.push(s);
     }
 
     return satellitesArray;

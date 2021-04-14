@@ -4,6 +4,7 @@ import {BrowserRouter as Router,
         Route} from "react-router-dom";
 import HomeScreen from "./screens/HomeScreen";
 import LoadFileScreen from './screens/LoadFileScreen';
+import ChartsScreen from "./screens/ChartsScreen";
 import Header from "./components/Header";
 
 import mainTheme from "./styles/main";

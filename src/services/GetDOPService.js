@@ -3,7 +3,9 @@ import {degToRad} from "./GetSatelliteECEFCoordinatesService";
 
 const GetDOPService = (satellites, receiver) => {
 
-    const phi = degToRad(receiver.phi), lambda = degToRad(receiver.lambda), h = receiver.h;
+    console.log(receiver);
+    //receiver coordinates, hardcoded for testing
+    const phi = degToRad(52), lambda = degToRad(21), h = 100;
 
     const a = 6378137;
     const eSquared = 0.00669438002290;
@@ -32,8 +34,9 @@ const GetDOPService = (satellites, receiver) => {
 
     let deltaPs = [];
 
-    for (const s of satellites) {
+    for (const idx in satellites) {
 
+        const s = satellites[idx];
         const xs = s.ECEFcoords[0], ys = s.ECEFcoords[1], zs = s.ECEFcoords[2], ro = s.ro;
 
         const deltaP = math.matrix([-(xs - X) / ro, -(ys - Y) / ro, -(zs - Z) / ro,  1]);
@@ -73,20 +76,12 @@ const GetDOPService = (satellites, receiver) => {
 
     // console.log("H " + HDOP + " V " + VDOP);
 
-    //const PDOPneu = Math.sqrt(mainDiagQneu.subset(math.index(0)) + mainDiagQneu.subset(math.index(1)) + mainDiagQneu.subset(math.index(2)));
+    const PDOPneu = Math.sqrt(mainDiagQneu.subset(math.index(0)) + mainDiagQneu.subset(math.index(1)) + mainDiagQneu.subset(math.index(2)));
 
     // console.log("P " + PDOP);
     // console.log("Pneu " + PDOPneu);
 
-    let DOP = {};
-
-    DOP.G = GDOP;
-    DOP.P = PDOP;
-    DOP.T = TDOP;
-    DOP.H = HDOP;
-    DOP.V = VDOP;
-
-    return DOP;
+    return {GDOP, PDOP, TDOP, HDOP, VDOP, PDOPneu};
 }
 
 export default GetDOPService
