@@ -5,8 +5,8 @@ const PageWrapper = styled.main`
   margin: 0;
   display: flex;
   flex-flow: row;
-  width: 100vw;
-  height: 90vh;
+  max-width: 100vw;
+  min-height: 90vh;
   background-image: linear-gradient(180deg, ${props => props.theme.colours.primary}, ${props => props.theme.colours.details});
   font-family: ${props => props.theme.fonts.family};
   font-size: ${props => props.theme.fonts.size.l};

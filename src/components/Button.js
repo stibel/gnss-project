@@ -1,6 +1,6 @@
 import React from 'react'
 import styled, {keyframes} from "styled-components";
-import globe from "../images/FP_Satellite_icon.svg";
+import satellite from "../images/FP_Satellite_icon.svg";
 
 const spin = keyframes`
   0% {
@@ -19,23 +19,6 @@ const ImageWrapper = styled.img`
   width: 80%;
   z-index: 5;
   animation: infinite 10s ${spin} linear;
-
-  @keyframes jump{
-    50% {
-      width: 60%;
-    }
-    75% {
-      width: 100%;
-    }
-    100% {
-      width: 80%;
-    }
-  }
-  
-  &:hover {
-  animation: jump 0.5s;
-  -webkit-animation-fill-mode: forwards;
-  }
 `
 
 const ButtonWrapper = styled.div`
@@ -73,7 +56,7 @@ const Button = props => {
 
 
     return (
-            <ButtonWrapper onClick={props.onClick}><ImageWrapper src={globe} alt={"globe"} /></ButtonWrapper>
+            <ButtonWrapper onClick={props.onClick}><ImageWrapper src={satellite} alt={"satellite"} /></ButtonWrapper>
     )
 }
 

@@ -74,9 +74,9 @@ const HomeScreen = props => {
                     <ContentWrapper>
                         <p style={{fontSize: mainTheme.fonts.size.m}}> {apod.date} <br/> {apod.title}</p>
                         {apod.media_type === "image" ?
-                            <ImageWrapper src={apod.hasOwnProperty("hdurl") ? apod.hdurl : apod.url}/>
+                            <ImageWrapper title={apod.explanation} src={apod.hasOwnProperty("hdurl") ? apod.hdurl : apod.url}/>
                             :
-                            <VideoWrapper src={apod.url}/>
+                            <VideoWrapper title={apod.explanation} src={apod.url}/>
                         }
                         <p style={{fontSize: mainTheme.fonts.size.s}}>{apod.copyright}</p>
                     </ContentWrapper>

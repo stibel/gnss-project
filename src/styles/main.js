@@ -6,7 +6,8 @@ const mainTheme = {
             s: '2vh',
             m: '3vh',
             l: '4vh',
-            xl: '5vh'
+            xl: '5vh',
+            xxl: '10vh'
         }
     },
     colours: {

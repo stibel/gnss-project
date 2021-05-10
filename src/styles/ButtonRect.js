@@ -2,9 +2,9 @@ import styled from "styled-components";
 
 const ButtonRect = styled.div`
   padding: 0;
-  margin: 1vw;
+  margin: 1vh;
   width: 12vw;
-  height: 2vw;
+  height: 2.5vw;
   display: flex;
   text-align: center;
   align-items: center;

@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Switch, Route, useHistory} from "react-router-dom";
+import {Switch, Route, useRouteMatch, useHistory} from "react-router-dom";
 import {ToastContainer} from "react-toastify";
 import sem from 'gps-sem-parser';
 import axios from "axios";
@@ -53,12 +53,12 @@ const ButtonWrapper = styled.main`
 `
 
 const LoadFileScreen = props => {
+    const {path, url} = useRouteMatch();
     const history = useHistory();
     const [alm, setAlm] = useState(null);
     const [chartsData, setChartsData] = useState(null);
     const [receiver, setReceiver] = useState(null);
     const [date, setDate] = useState(new Date());
-    // const [counting, setCounting] = useState(false);
     const week = useRef(null);
     const toa = useRef(null);
     const year = useRef(null);
@@ -71,9 +71,6 @@ const LoadFileScreen = props => {
         axios.get('https://cors.bridged.cc/https://www.navcen.uscg.gov/?pageName=currentAlmanac&format=sem-txt')
             .then(res => setAlm(sem(res.data)))
             .catch(err => console.error(err));
-
-        const day = new Date();
-        year.current.value = day.getFullYear();
     }, [])
 
     useEffect(() => {
@@ -82,6 +79,7 @@ const LoadFileScreen = props => {
             console.log(alm);
             week.current.value = alm.gpsWeek;
             toa.current.value = alm.toa;
+            year.current.value = date.getFullYear();
         }
     }, [alm])
 
@@ -92,6 +90,19 @@ const LoadFileScreen = props => {
     useEffect(() => {
         console.log(receiver);
     }, [receiver])
+
+    const getLocation = () => {
+        if (!navigator.geolocation) {
+            Toast('Geolocation is not supported by your browser', 'e');
+        } else {
+            navigator.geolocation.getCurrentPosition((position) => {
+                phi.current.value = position.coords.latitude;
+                lambda.current.value = position.coords.longitude;
+            }, (e) => {
+                console.error(e);
+            });
+        }
+    }
 
     const getClosestTime = provided => {
         const arr = [61440, 147456, 233472, 319488, 405504, 503808, 589824];
@@ -122,9 +133,9 @@ const LoadFileScreen = props => {
             phi.current.value = phi.current.value % 90
             lambda.current.value = lambda.current.value % 180
             setReceiver({
-                phi: phi.current.value,
-                lambda: lambda.current.value,
-                h: h.current.value
+                phi: Number(phi.current.value),
+                lambda: Number(lambda.current.value),
+                h: Number(h.current.value)
             });
             Toast(`Receiver set: (${phi.current.value}, ${lambda.current.value}, ${h.current.value})`, 's');
         }
@@ -164,23 +175,24 @@ const LoadFileScreen = props => {
         let data = [];
         const startTime = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         let time = new Date(startTime);
-        const mask = observationMask.current.value < 0 ? 0 : observationMask.current.value;
-        // while (differenceInMinutes(time, startTime) < 24 *  60 + 1) {
+        observationMask.current.value = observationMask.current.value < 0 ? 0 : observationMask.current.value;
+        const mask = observationMask.current.value;
+        while (differenceInMinutes(time, startTime) < 24 *  60 + 1) {
             const sats = GetTopocentricCoordinatesService(receiver, alm, time);
-            console.log(sats)
-            const DOPs = GetDOPService(sats, receiver);
-            console.log(DOPs)
             const visibleSats = sats.filter((item) => item.el > mask);
-            data.push({t: time, s: sats, v: visibleSats.length, d: DOPs});
-            console.log(data);
-            // time = add(time, {minutes: 10});
-        // }
-        // setChartsData([...data]);
+            const DOPs = GetDOPService(visibleSats, receiver);
+            console.log(DOPs)
+            data.push({t: time, s: sats, v: visibleSats, d: {...DOPs}});
+
+            time = add(time, {minutes: 10});
+        }
+        console.log(data)
+        setChartsData([...data]);
     }
 
     useEffect(() => {
         if(chartsData)
-            history.push('/Load/Charts')
+            history.push(`${path}/Charts`)
     }, [chartsData]);
 
     return (
@@ -237,7 +249,10 @@ const LoadFileScreen = props => {
                             <div style={{width: '15vw'}}>Maska&nbsp;obserwacji</div>
                             <Input ref={observationMask}/>
                         </Label>
-                            <ButtonRect onClick={handleReceiverInput}>Ustaw pozycję odbiornika</ButtonRect>
+                            <div style={{display: 'flex', flexFlow: 'row'}}>
+                                <ButtonRect onClick={getLocation}>Ustaw automatyczne współrzędne</ButtonRect>
+                                <ButtonRect onClick={handleReceiverInput}>Ustaw pozycję odbiornika</ButtonRect>
+                            </div>
                             <div style={{fontSize: mainTheme.fonts.size.l}}>
                                 Data
                             </div>
@@ -256,7 +271,7 @@ const LoadFileScreen = props => {
             </PageWrapper>
             <ToastContainer />
             </Route>
-            <Route path={'/Load/Charts'}>
+            <Route path={`${path}/Charts`}>
                 <ChartsScreen data={chartsData} />
             </Route>
         </Switch>

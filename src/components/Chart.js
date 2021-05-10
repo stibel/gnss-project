@@ -1,6 +1,7 @@
 import React from "react";
 import Plotly from "plotly.js";
 import createPlotlyComponent from "react-plotly.js/factory";
+import styled from "styled-components";
 
 import mainTheme from "../styles/main";
 
@@ -62,17 +63,29 @@ const plot = (xTitle, yTitle, plotTitle, rangeX = [], rangeY = [], titleFactor =
     }
 }
 
+const PlotWrapper = styled.div`
+  display: flex;
+  flex-flow: column;
+  width: 80%;
+  align-items: center;
+  margin-top: 3vh;
+  margin-bottom: 2vh;
+  border-radius: 20%;
+  filter: drop-shadow(0 0 2vh ${props => props.theme.colours.detailsTwo});
+`
+
 const Chart = props => {
     return (
-        <div style={{width: '80%', display: 'flex', flexFlow: 'column', justifyContent: 'center'}}>
+        <PlotWrapper>
             <Plot data={props.data}
-                  style={{width: '95%', height: '100%'}}
+                  style={{width: '60vw', height: '100%'}}
                   useResizeHandler={true}
                   layout={{...plot(props.XTitle, props.YTitle, props.ChartTitle, props.rangeX, props.rangeY,
                           props.titleFactor, props.AxisFactor)}}
                   config={{scrollZoom: false, displaylogo: false, ...props.plotCongif}}
                   />
-        </div>
+            {props.controls}
+        </PlotWrapper>
     )
 }
 

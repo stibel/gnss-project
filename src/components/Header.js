@@ -9,7 +9,7 @@ const HeaderWrapper = styled.div`
   padding: 0;
   margin: 0;
   height: 10vh;
-  width: 100vw;
+  max-width: 100vw;
   display: flex;
   flex-flow: row;
   justify-content: center;
@@ -78,11 +78,20 @@ const Header = (props) => {
                     </ItemWrapper>
                     <ItemWrapper>
                         <NavLink
-                            to="/Load"
+                            exact to="/Load"
                             style={style}
                             activeStyle={activeStyle}
                         >
-                            Wyznacz datę
+                            Parametry
+                        </NavLink>
+                    </ItemWrapper>
+                    <ItemWrapper>
+                        <NavLink
+                            exact to="/Load/Charts"
+                            style={style}
+                            activeStyle={activeStyle}
+                        >
+                            Wykresy
                         </NavLink>
                     </ItemWrapper>
                 </NavWrapper>

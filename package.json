@@ -26,6 +26,7 @@
     "react-plotly.js": "^2.5.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "react-select": "^4.3.0",
     "react-sky": "^1.1.0",
     "react-sky-bg": "^1.0.0",
     "react-toastify": "^7.0.3",

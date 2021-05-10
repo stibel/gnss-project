@@ -3,9 +3,10 @@ import {degToRad} from "./GetSatelliteECEFCoordinatesService";
 
 const GetDOPService = (satellites, receiver) => {
 
-    console.log(receiver);
-    //receiver coordinates, hardcoded for testing
-    const phi = degToRad(52), lambda = degToRad(21), h = 100;
+    const phi = degToRad(receiver.phi), lambda = degToRad(receiver.lambda), h = receiver.h;
+
+    // console.log(receiver);
+    // console.log("RECIVER IN RAD", phi, lambda, h)
 
     const a = 6378137;
     const eSquared = 0.00669438002290;
@@ -34,9 +35,8 @@ const GetDOPService = (satellites, receiver) => {
 
     let deltaPs = [];
 
-    for (const idx in satellites) {
+    for (const s of satellites) {
 
-        const s = satellites[idx];
         const xs = s.ECEFcoords[0], ys = s.ECEFcoords[1], zs = s.ECEFcoords[2], ro = s.ro;
 
         const deltaP = math.matrix([-(xs - X) / ro, -(ys - Y) / ro, -(zs - Z) / ro,  1]);
@@ -45,16 +45,21 @@ const GetDOPService = (satellites, receiver) => {
     }
 
     const A = math.matrix(deltaPs);
+    console.log(A);
+    //
+    // const AT = math.transpose(A);
+    //
+    // let Q = math.multiply(AT, A);
+    //
+    // Q = math.inv(Q);
 
-    const AT = math.transpose(A);
+    const Q = math.inv(math.multiply(math.transpose(A), A))
 
-    let Q = math.multiply(AT, A);
-
-    Q = math.inv(Q);
-
-    // console.log(Q);
+    console.log(Q);
 
     const mainDiag = math.diag(Q);
+
+    // console.log(mainDiag);
 
     const GDOP = Math.sqrt(mainDiag.subset(math.index(0)) + mainDiag.subset(math.index(1)) + mainDiag.subset(math.index(2)) + mainDiag.subset(math.index(3)));
 
