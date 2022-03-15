@@ -67,7 +67,7 @@ const HomeScreen = props => {
         <>
             <PageWrapper>
                 <ContentWrapper>
-                    Mikołaj Siebielec
+                    SNS 1
                 </ContentWrapper>
                 <ContentWrapper>
                 {fetched ?
